@@ -1,0 +1,255 @@
+# ____       _       _                   ____             __ _       
+#|  _ \ ___ | |_   _| |__   __ _ _ __   / ___|___  _ __  / _(_) __ _ 
+#| |_) / _ \| | | | | '_ \ / _` | '__| | |   / _ \| '_ \| |_| |/ _` |
+#|  __/ (_) | | |_| | |_) | (_| | |    | |__| (_) | | | |  _| | (_| |
+#|_|   \___/|_|\__, |_.__/ \__,_|_|     \____\___/|_| |_|_| |_|\__, |
+#              |___/                                           |___/ 
+
+
+[colors]
+background = #00000000
+background-alt = #444
+foreground = #fff
+foreground-alt = #555
+primary = #ffb52a
+secondary = #e60053
+alert = #bd2c40
+
+[bar/mainbar]
+width = 100%
+height = 24
+fixed-center = true
+;separator = |
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+border-size = 5
+border-color = ${colors.background}
+
+padding-left = 2
+padding-right = 2
+
+module-margin-left = 0
+module-margin-right = 1
+
+font-0 = fixed:size=12;0
+font-1 = JoyPixels:size=16:scale=7;0
+
+modules-left = powermenu screenshot-menu wlan pulseaudio
+modules-center = memory cpu battery
+modules-right = xkeyboard date
+
+tray-position = right
+tray-padding = 2
+tray-background = ${colors.background}
+tray-maxsize = 18
+
+cursor-click = pointer
+cursor-scroll = ns-resize
+
+[module/powermenu]
+type = custom/menu
+expand-right = true
+format-spacing = 1
+
+label-open = ☢️
+label-close = ❌
+label-separator = |
+label-separator-foreground = ${colors.foreground-alt}
+
+menu-0-0 = Reboot
+menu-0-0-exec = "shutdown now -r"
+menu-0-0-foreground = #a100fb
+menu-0-1 = Power Off
+menu-0-1-foreground = #00fb2b
+menu-0-1-exec = "shutdown now"
+
+[module/xwindow]
+type = internal/xwindow
+label = %title:0:30:...%
+
+[module/xkeyboard]
+type = internal/xkeyboard
+
+format-prefix = "⌨️ "
+format-prefix-foreground = ${colors.foreground-alt}
+format-prefix-underline = ${colors.secondary}
+
+label-layout = %layout%
+label-layout-underline = ${colors.secondary}
+
+label-indicator-padding = 2
+label-indicator-margin = 1
+label-indicator-background = ${colors.secondary}
+label-indicator-underline = ${colors.secondary}
+
+[module/filesystem]
+type = internal/fs
+interval = 25
+
+mount-0 = /
+
+label-mounted = %{F#0a81f5}%mountpoint%%{F-}: %percentage_used%%
+label-unmounted = %mountpoint% not mounted
+label-unmounted-foreground = ${colors.foreground-alt}
+
+[module/xbacklight]
+type = internal/xbacklight
+
+format = <label> <bar>
+label = BL
+
+bar-width = 10
+bar-indicator = |
+bar-indicator-foreground = #fff
+bar-indicator-font = 2
+bar-fill = ─
+bar-fill-font = 2
+bar-fill-foreground = #9f78e1
+bar-empty = ─
+bar-empty-font = 2
+bar-empty-foreground = ${colors.foreground-alt}
+
+[module/backlight-acpi]
+inherit = module/xbacklight
+type = internal/backlight
+card = intel_backlight
+
+[module/cpu]
+type = internal/cpu
+
+interval = 2
+;format-prefix = "CPU "
+format-prefix-foreground = ${colors.foreground-alt}
+format-underline = #2e7cf7
+label = %percentage-cores%
+format = <label>
+
+[module/memory]
+type = internal/memory
+
+interval = 2
+;format-prefix = "RAM "
+format-prefix-foreground = ${colors.foreground-alt}
+format-underline = #4bffdc
+label = %gb_used%/%gb_free%
+format = <label> |
+
+[module/wlan]
+type = internal/network
+interface = wlp3s0
+interval = 0.1
+
+label-connected =  %local_ip% | %downspeed%
+format-connected = <label-connected>
+format-connected-underline = #8300ae
+
+;format-disconnected = No Wlan
+format-disconnected = <label-disconnected>
+;format-disconnected-underline = ${self.format-connected-underline}
+label-disconnected = %local_ip%
+;label-disconnected-foreground = ${colors.foreground-alt}
+
+[module/date]
+type = internal/date
+interval = 10
+date = %d/%m
+time = %H:%M
+format-underline = #0a6cf5
+label = ⌚%time%|📅%date%
+
+[module/pulseaudio]
+type = internal/pulseaudio
+interval = 1
+
+format-volume = 🔈<label-volume>
+label-volume = %{A1:pavucontrol:}%percentage%%%{A}
+label-volume-foreground = ${root.foreground}
+
+label-muted = 🔇
+label-muted-foreground = #666
+
+bar-volume-width = 10
+bar-volume-foreground-0 = #55aa55
+bar-volume-foreground-1 = #55aa55
+bar-volume-foreground-2 = #55aa55
+bar-volume-foreground-3 = #55aa55
+bar-volume-foreground-4 = #55aa55
+bar-volume-foreground-5 = #f5a70a
+bar-volume-foreground-6 = #ff5555
+bar-volume-gradient = true
+bar-volume-indicator = |
+;bar-volume-indicator-font = 0
+bar-volume-fill = -
+;bar-volume-fill-font = 20
+bar-volume-empty = -
+;bar-volume-empty-font = 3
+bar-volume-empty-foreground = ${colors.foreground-alt}
+
+[module/battery]
+type = internal/battery
+battery = BAT0
+adapter = ADP1
+full-at = 98
+
+; Only applies if <animation-charging> is used
+animation-charging-0 = 
+animation-charging-1 = 
+animation-charging-2 = 
+animation-charging-3 = 
+animation-charging-4 = 
+; Framerate in milliseconds
+animation-charging-framerate = 750
+
+animation-discharging-0 = 
+animation-discharging-1 = 
+animation-discharging-2 = 
+animation-discharging-3 = 
+animation-discharging-4 = 
+animation-discharging-framerate = 500
+
+label-charging = Charging %percentage%%
+label-discharging = Discharging %percentage%%
+label-full = 🔋
+
+format-charging = <label-charging>
+format-charging-underline = #47ad5d
+
+format-discharging = <label-discharging>
+format-discharging-underline = #e7a12e
+
+format-full-prefix = ""
+format-full-prefix-foreground = ${colors.foreground-alt}
+format-full-underline = ${self.format-charging-underline}
+
+[module/screenshot-menu]
+type = custom/menu
+expand-right = true
+format-spacing = 1
+;xfce4-screenshooter -f
+;xfce4-screenshooter -r
+
+label-open = 📷
+label-close = ❌
+label-separator = |
+label-separator-foreground = ${colors.foreground-alt}
+
+menu-0-0 = Full Screen
+menu-0-0-exec = "xfce4-screenshooter -f"
+menu-0-1 = Screen Range
+menu-0-1-exec = "xfce4-screenshooter -r"
+
+[settings]
+screenchange-reload = true
+;compositing-background = xor
+;compositing-background = screen
+;compositing-foreground = source
+;compositing-border = over
+;pseudo-transparency = true
+
+[global/wm]
+margin-top = 0
+margin-bottom = 0
+
+; vim:ft=dosini

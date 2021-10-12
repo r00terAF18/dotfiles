@@ -1,0 +1,14 @@
+appimagetool-bin
+base-devel-meta
+dotnet-sdk-preview
+minecraft-launcher
+plank-theme-bigsur
+proton
+qview
+siji-ng
+stacer-bin
+ttf-unifont
+vazir-fonts
+visual-studio-code-bin
+windscribe-cli
+xdman
