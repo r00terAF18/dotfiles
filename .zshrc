@@ -11,8 +11,8 @@ fi
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/home/amirs/.oh-my-zsh"
-export BAT_THEME="Dracula"
+export ZSH="~/.oh-my-zsh"
+# export BAT_THEME="Dracula"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -110,8 +110,21 @@ alias nfetch="neofetch | lolcat"
 getWeb() {
   wget --mirror --convert-links --adjust-extension --page-requisites --no-parent --no-check-certificate "$1"
 }
+
+ydl-v-720() {
+	youtube-dl --ignore-config --yes-playlist --cookies ~/youtube.com_cookies.txt --embed-thumbnail -o "$1/%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s" -f "bestvideo[height=720][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height=720]+bestaudio" "$2"
+}
+
+ydl-v-1080() {
+	youtube-dl --ignore-config --yes-playlist --cookies ~/youtube.com_cookies.txt --embed-thumbnail -o "$1/%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s" -f "bestvideo[height=1080][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height=1080]+bestaudio" "$2"
+}
+
 ydl-m() {
-	youtube-dl -x --audio-format m4a  --cookies youtube.com_cookies.txt -o '%(title)s.%(ext)s' "$1"
+	youtube-dl -x --audio-format m4a --embed-thumbnail --cookies ~/youtube.com_cookies.txt -o "$1/%(title)s.%(ext)s" "$2"
+}
+
+ydl-m-p() {
+	youtube-dl --ignore-config --yes-playlist -x --audio-format m4a --embed-thumbnail --cookies ~/youtube.com_cookies.txt -o "$1/%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s" "$2"
 }
 
 cs-get() {
@@ -223,11 +236,8 @@ ZSH_HIGHLIGHT_STYLES[cursor]='standout'
 
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-source ~/powerlevel10k/powerlevel10k.zsh-theme
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
-# tabtab source for electron-forge package
-# uninstall by removing these lines or running `tabtab uninstall electron-forge`
-[[ -f /home/amirs/Dev/Node_Projects/inventory-manager/node_modules/tabtab/.completions/electron-forge.zsh ]] && . /home/amirs/Dev/Node_Projects/inventory-manager/node_modules/tabtab/.completions/electron-forge.zsh
+source /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme
