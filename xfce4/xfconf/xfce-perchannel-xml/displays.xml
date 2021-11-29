@@ -20,23 +20,6 @@
         <property name="Y" type="int" value="0"/>
       </property>
     </property>
-    <property name="DP-1" type="string" value="DP-1">
-      <property name="Active" type="bool" value="true"/>
-      <property name="EDID" type="string" value=""/>
-      <property name="Resolution" type="string" value="1024x768"/>
-      <property name="RefreshRate" type="double" value="60.003840"/>
-      <property name="Rotation" type="int" value="0"/>
-      <property name="Reflection" type="string" value="0"/>
-      <property name="Primary" type="bool" value="false"/>
-      <property name="Scale" type="empty">
-        <property name="X" type="double" value="1.000000"/>
-        <property name="Y" type="double" value="1.000000"/>
-      </property>
-      <property name="Position" type="empty">
-        <property name="X" type="int" value="1920"/>
-        <property name="Y" type="int" value="0"/>
-      </property>
-    </property>
     <property name="HDMI-2" type="string" value="Goldstar Company Ltd 22&quot;">
       <property name="Active" type="bool" value="true"/>
       <property name="EDID" type="string" value="fc94d72f037553bb1046670ea59fd619ec85e3ef"/>
@@ -70,23 +53,6 @@
       </property>
       <property name="Position" type="empty">
         <property name="X" type="int" value="0"/>
-        <property name="Y" type="int" value="0"/>
-      </property>
-    </property>
-    <property name="DP-1" type="string" value="DP-1">
-      <property name="Active" type="bool" value="true"/>
-      <property name="EDID" type="string" value=""/>
-      <property name="Resolution" type="string" value="1024x768"/>
-      <property name="RefreshRate" type="double" value="60.003840"/>
-      <property name="Rotation" type="int" value="0"/>
-      <property name="Reflection" type="string" value="0"/>
-      <property name="Primary" type="bool" value="false"/>
-      <property name="Scale" type="empty">
-        <property name="X" type="double" value="1.000000"/>
-        <property name="Y" type="double" value="1.000000"/>
-      </property>
-      <property name="Position" type="empty">
-        <property name="X" type="int" value="1920"/>
         <property name="Y" type="int" value="0"/>
       </property>
     </property>

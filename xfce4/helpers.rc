@@ -1,5 +1,4 @@
 FileManager=Thunar
-WebBrowser=brave-browser
 MailReader=custom-MailReader
-TerminalEmulator=xfce4-terminal
 
+WebBrowser=brave-browser
