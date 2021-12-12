@@ -39,7 +39,7 @@
     <property name="repeat_urgent_blink" type="bool" value="false"/>
     <property name="resize_opacity" type="int" value="100"/>
     <property name="restore_on_move" type="bool" value="true"/>
-    <property name="scroll_workspaces" type="bool" value="true"/>
+    <property name="scroll_workspaces" type="bool" value="false"/>
     <property name="shadow_delta_height" type="int" value="0"/>
     <property name="shadow_delta_width" type="int" value="0"/>
     <property name="shadow_delta_x" type="int" value="0"/>
@@ -49,11 +49,11 @@
     <property name="show_dock_shadow" type="bool" value="false"/>
     <property name="show_frame_shadow" type="bool" value="false"/>
     <property name="show_popup_shadow" type="bool" value="false"/>
-    <property name="snap_resist" type="bool" value="false"/>
+    <property name="snap_resist" type="bool" value="true"/>
     <property name="snap_to_border" type="bool" value="true"/>
     <property name="snap_to_windows" type="bool" value="false"/>
     <property name="snap_width" type="int" value="10"/>
-    <property name="theme" type="string" value="Dracula"/>
+    <property name="theme" type="string" value="Sweet-Dark"/>
     <property name="title_alignment" type="string" value="center"/>
     <property name="title_font" type="string" value="Noto Sans 10"/>
     <property name="title_horizontal_offset" type="int" value="0"/>
@@ -87,12 +87,12 @@
     <property name="cycle_preview" type="bool" value="true"/>
     <property name="cycle_tabwin_mode" type="int" value="0"/>
     <property name="sync_to_vblank" type="bool" value="true"/>
-    <property name="zoom_desktop" type="bool" value="true"/>
+    <property name="zoom_desktop" type="bool" value="false"/>
     <property name="cycle_raise" type="bool" value="false"/>
     <property name="cycle_minimized" type="bool" value="false"/>
     <property name="frame_border_top" type="int" value="0"/>
     <property name="horiz_scroll_opacity" type="bool" value="false"/>
     <property name="vblank_mode" type="string" value="auto"/>
-    <property name="zoom_pointer" type="bool" value="true"/>
+    <property name="zoom_pointer" type="bool" value="false"/>
   </property>
 </channel>

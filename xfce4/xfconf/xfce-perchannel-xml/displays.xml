@@ -21,7 +21,7 @@
       </property>
     </property>
     <property name="HDMI-2" type="string" value="Goldstar Company Ltd 22&quot;">
-      <property name="Active" type="bool" value="true"/>
+      <property name="Active" type="bool" value="false"/>
       <property name="EDID" type="string" value="fc94d72f037553bb1046670ea59fd619ec85e3ef"/>
       <property name="Resolution" type="string" value="1920x1080"/>
       <property name="RefreshRate" type="double" value="74.972503"/>
@@ -57,7 +57,7 @@
       </property>
     </property>
     <property name="HDMI-2" type="string" value="Goldstar Company Ltd 22&quot;">
-      <property name="Active" type="bool" value="true"/>
+      <property name="Active" type="bool" value="false"/>
       <property name="EDID" type="string" value="fc94d72f037553bb1046670ea59fd619ec85e3ef"/>
       <property name="Resolution" type="string" value="1920x1080"/>
       <property name="RefreshRate" type="double" value="74.972503"/>
