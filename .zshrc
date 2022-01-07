@@ -1,4 +1,4 @@
-colorscript random
+# colorscript random
 
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
@@ -10,9 +10,10 @@ fi
 export ZSH="/home/amir/.oh-my-zsh"
 export BAT_THEME="Dracula"
 export PATH=/home/amir/.yarn/bin:$PATH
+export PATH=/home/amir/Rider/bin:$PATH
+export PATH=/home/amir/CLion/bin:$PATH
 
 ZSH_THEME="dracula"
-
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
 # a theme from this variable instead of looking in $ZSH/themes/
