@@ -1,4 +1,5 @@
-# colorscript random
+colorscript random
+# kitty +kitten icat /home/amir/Pictures/kitty.jpg
 fm6000 -r -c random
 
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
