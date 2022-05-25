@@ -124,7 +124,7 @@ ydl-m-p() {
 }
 
 cs-get() {
-	youtube-dl --cookies "curiositystream.com_cookies.txt" --username "ahroohi1379+1@hotmail.com" --password "@LicenseMarket" -o '%(title)s.%(ext)' "$1"
+	youtube-dl --cookies "curiositystream.com_cookies.txt" --username "ahroohi1379+1@hotmail.com" --password "$1" -o '%(title)s.%(ext)' "$2"
 }
 
 split-vid() {

@@ -139,3 +139,46 @@ ex ()
 # BEGIN_KITTY_SHELL_INTEGRATION
 if test -n "$KITTY_INSTALLATION_DIR" -a -e "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; then source "$KITTY_INSTALLATION_DIR/shell-integration/bash/kitty.bash"; fi
 # END_KITTY_SHELL_INTEGRATION
+
+
+alias pmc="python manage.py createsuperuser"
+alias pmk="python manage.py makemigrations"
+alias pmm="python manage.py migrate"
+alias pmr="python manage.py runserver"
+alias acenv="source ./env/bin/activate"
+
+getWeb() {
+  wget --mirror --convert-links --adjust-extension --page-requisites --no-parent --no-check-certificate "$1"
+}
+
+ydl-v-720() {
+	youtube-dl --ignore-config --yes-playlist --cookies ~/Downloads/youtube.com_cookies.txt --embed-thumbnail -o "$1/%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s" -f "bestvideo[height=720][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height=720]+bestaudio" "$2"
+}
+
+ydl-v-1080() {
+	youtube-dl --ignore-config --yes-playlist --cookies ~/Downloads/youtube.com_cookies.txt --embed-thumbnail -o "$1/%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s" -f "bestvideo[height=1080][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height=1080]+bestaudio" "$2"
+}
+
+ydl-m() {
+	youtube-dl -x --audio-format m4a --embed-thumbnail --cookies ~/Downloads/youtube.com_cookies.txt -o "$1/%(title)s.%(ext)s" "$2"
+}
+
+ydl-m-p() {
+	youtube-dl --ignore-config --yes-playlist -x --audio-format m4a --embed-thumbnail --cookies ~/Downloads/youtube.com_cookies.txt -o "$1/%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s" "$2"
+}
+
+cs-get() {
+	youtube-dl --cookies "curiositystream.com_cookies.txt" --username "ahroohi1379+1@hotmail.com" --password "$1" -o '%(title)s.%(ext)' "$2"
+}
+
+split-vid() {
+	python split.py -f "$1" -c 4
+}
+
+mergeAmirToBrnach() {
+	git checkout "$1" && git pull && git merge Amir && git push && git checkout Amir
+}
+
+mergeBranchToAmir() {
+	git checkout "$1" && git pull && git checkout Amir && git merge "$2" && git push
+}
