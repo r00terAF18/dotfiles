@@ -1,7 +1,0 @@
-appimagetool-bin
-minecraft-launcher
-qview
-stacer-bin
-vazir-fonts
-visual-studio-code-bin
-xdman
