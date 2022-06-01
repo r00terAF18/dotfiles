@@ -12,6 +12,7 @@ fi
 export ZSH="/home/amir/.oh-my-zsh"
 export BAT_THEME="Dracula"
 export PATH=/home/amir/.yarn/bin:$PATH
+export PATH=/home/amir/.local/bin:$PATH
 export PATH=/home/amir/Rider/bin:$PATH
 export PATH=/home/amir/CLion/bin:$PATH
 
