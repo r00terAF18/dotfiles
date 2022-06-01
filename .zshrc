@@ -1,5 +1,4 @@
 colorscript random
-# kitty +kitten icat /home/amir/Pictures/kitty.jpg
 fm6000 -r -c random
 
 if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
@@ -11,10 +10,7 @@ fi
 
 export ZSH="/home/amir/.oh-my-zsh"
 export BAT_THEME="Dracula"
-export PATH=/home/amir/.yarn/bin:$PATH
-export PATH=/home/amir/.local/bin:$PATH
-export PATH=/home/amir/Rider/bin:$PATH
-export PATH=/home/amir/CLion/bin:$PATH
+export PATH=/home/amir/.local/bin:/home/amir/Rider/bin:/home/amir/CLion/bin:/home/amir/.yarn/bin:$PATH
 
 ZSH_THEME="dracula"
 # Set list of themes to pick from when loading at random
