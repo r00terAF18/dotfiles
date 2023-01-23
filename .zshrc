@@ -67,7 +67,6 @@ alias pmk="python manage.py makemigrations"
 alias pmm="python manage.py migrate"
 alias pmr="python manage.py runserver"
 alias acenv="source ./env/bin/activate"
-alias sudo="doas"
 
 getWeb() {
     wget --mirror --convert-links --adjust-extension --page-requisites --no-parent --no-check-certificate "$1"
