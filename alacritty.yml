@@ -106,7 +106,8 @@ font:
     #   - (macOS) Menlo
     #   - (Linux/BSD) monospace
     #   - (Windows) Consolas
-    family: "Fira Code"
+    family: "MesloLGM NF"
+    size: 10.0
 
 # The `style` can be specified to pick a specific face.
 #style: Regular
@@ -429,7 +430,7 @@ cursor:
 #
 # Directory the shell is started in. If this is unset, or `None`, the working
 # directory of the parent process will be used.
-working_directory: C:\Users\ahroo
+working_directory: C:\Users\Amir Hossein Roohi\
 # Send ESC (\x1b) before characters when alt is pressed.
 #alt_send_esc: true
 
