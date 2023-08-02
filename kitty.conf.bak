@@ -1507,6 +1507,6 @@ map f1 launch colorscript random
 
 
 # BEGIN_KITTY_THEME
-# Kaolin Aurora
+# Wild Cherry
 include current-theme.conf
 # END_KITTY_THEME
