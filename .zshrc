@@ -68,41 +68,184 @@ alias pmm="python manage.py migrate"
 alias pmr="python manage.py runserver"
 alias acenv="source ./env/bin/activate"
 
-getWeb() {
-    wget --mirror --convert-links --adjust-extension --page-requisites --no-parent --no-check-certificate "$1"
+# --- yt-dlp Helper Functions for Zsh Shell ---
+
+# Base directory and cookie file path (adjust if needed)
+_YT_VIDEO_DIR="$HOME/Videos"
+_YT_COOKIES_FILE="$_YT_VIDEO_DIR/www.youtube.com_cookies.txt"
+
+# --- Standard Video Downloads ---
+
+yt_1080() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: yt_1080 <url>" >&2 # Print errors to stderr
+        return 1
+    fi
+    local url="$1"
+    local output_format="$_YT_VIDEO_DIR/%(upload_date>%Y-%m-%d)s - %(title)s.%(ext)s"
+
+    yt-dlp -f "bv[height<=1080][fps<=60]+ba" \
+           --cookies "$_YT_COOKIES_FILE" \
+           --embed-chapters --embed-metadata --embed-info-json --embed-thumbnail \
+           --sponsorblock-remove all \
+           -o "$output_format" \
+           "$url"
 }
 
-ydl-v-720() {
-    youtube-dl --ignore-config --yes-playlist --cookies ~/Downloads/youtube.com_cookies.txt --embed-thumbnail -o "$1/%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s" -f "bestvideo[height=720][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height=720]+bestaudio" "$2"
+yt_720() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: yt_720 <url>" >&2
+        return 1
+    fi
+    local url="$1"
+    local output_format="$_YT_VIDEO_DIR/%(upload_date>%Y-%m-%d)s - %(title)s.%(ext)s"
+
+    yt-dlp -f "bv[height<=720][fps<=60]+ba" \
+           --cookies "$_YT_COOKIES_FILE" \
+           --embed-chapters --embed-metadata --embed-info-json --embed-thumbnail \
+           --sponsorblock-remove all \
+           -o "$output_format" \
+           "$url"
 }
 
-ydl-v-1080() {
-    youtube-dl --ignore-config --yes-playlist --cookies ~/Downloads/youtube.com_cookies.txt --embed-thumbnail -o "$1/%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s" -f "bestvideo[height=1080][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height=1080]+bestaudio" "$2"
+yt_480() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: yt_480 <url>" >&2
+        return 1
+    fi
+    local url="$1"
+    local output_format="$_YT_VIDEO_DIR/%(upload_date>%Y-%m-%d)s - %(title)s.%(ext)s"
+
+    yt-dlp -f "bv[height<=480][fps<=60]+ba" \
+           --cookies "$_YT_COOKIES_FILE" \
+           --embed-chapters --embed-metadata --embed-info-json --embed-thumbnail \
+           --sponsorblock-remove all \
+           -o "$output_format" \
+           "$url"
 }
 
-ydl-m() {
-    youtube-dl -x --audio-format m4a --embed-thumbnail --cookies ~/Downloads/youtube.com_cookies.txt -o "$1/%(title)s.%(ext)s" "$2"
+yt() {
+    if [[ $# -ne 2 ]]; then
+        echo "Usage: yt <quality> <url>" >&2
+        echo "Example: yt 720 'video_url'" >&2
+        return 1
+    fi
+    local quality="$1"
+    local url="$2"
+    local output_format="$_YT_VIDEO_DIR/%(upload_date>%Y-%m-%d)s - %(title)s.%(ext)s"
+
+    yt-dlp -f "bv[height<=$quality][fps<=60]+ba" \
+           --cookies "$_YT_COOKIES_FILE" \
+           --embed-chapters --embed-metadata --embed-info-json --embed-thumbnail \
+           --sponsorblock-remove all \
+           -o "$output_format" \
+           "$url"
 }
 
-ydl-m-p() {
-    youtube-dl --ignore-config --yes-playlist -x --audio-format m4a --embed-thumbnail --cookies ~/Downloads/youtube.com_cookies.txt -o "$1/%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s" "$2"
+# --- Playlist Video Downloads ---
+
+yt_1080_p() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: yt_1080_p <playlist_url>" >&2
+        return 1
+    fi
+    local url="$1"
+    local output_format="$_YT_VIDEO_DIR/%(playlist)s/%(upload_date>%Y-%m-%d)s - %(title)s.%(ext)s"
+
+    yt-dlp -f "bv[height<=1080][fps<=60]+ba" \
+           --cookies "$_YT_COOKIES_FILE" \
+           --embed-chapters --embed-metadata --embed-info-json --embed-thumbnail \
+           --sponsorblock-remove all \
+           -o "$output_format" \
+           "$url"
 }
 
-cs-get() {
-    youtube-dl --cookies "curiositystream.com_cookies.txt" --username "ahroohi1379+1@hotmail.com" --password "$1" -o '%(title)s.%(ext)' "$2"
+yt_720_p() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: yt_720_p <playlist_url>" >&2
+        return 1
+    fi
+    local url="$1"
+    local output_format="$_YT_VIDEO_DIR/%(playlist)s/%(upload_date>%Y-%m-%d)s - %(title)s.%(ext)s"
+
+    yt-dlp -f "bv[height<=720][fps<=60]+ba" \
+           --cookies "$_YT_COOKIES_FILE" \
+           --embed-chapters --embed-metadata --embed-info-json --embed-thumbnail \
+           --sponsorblock-remove all \
+           -o "$output_format" \
+           "$url"
 }
 
-split-vid() {
-    python split.py -f "$1" -c 4
+yt_480_p() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: yt_480_p <playlist_url>" >&2
+        return 1
+    fi
+    local url="$1"
+    local output_format="$_YT_VIDEO_DIR/%(playlist)s/%(upload_date>%Y-%m-%d)s - %(title)s.%(ext)s"
+
+    yt-dlp -f "bv[height<=480][fps<=60]+ba" \
+           --cookies "$_YT_COOKIES_FILE" \
+           --embed-chapters --embed-metadata --embed-info-json --embed-thumbnail \
+           --sponsorblock-remove all \
+           -o "$output_format" \
+           "$url"
 }
 
-mergeAmirToBrnach() {
-    git checkout "$1" && git pull && git merge Amir && git push && git checkout Amir
+yt_p() {
+    if [[ $# -ne 2 ]]; then
+        echo "Usage: yt_p <quality> <playlist_url>" >&2
+        echo "Example: yt_p 720 'playlist_url'" >&2
+        return 1
+    fi
+    local quality="$1"
+    local url="$2"
+    local output_format="$_YT_VIDEO_DIR/%(playlist)s/%(upload_date>%Y-%m-%d)s - %(title)s.%(ext)s"
+
+    yt-dlp -f "bv[height<=$quality][fps<=60]+ba" \
+           --cookies "$_YT_COOKIES_FILE" \
+           --embed-chapters --embed-metadata --embed-info-json --embed-thumbnail \
+           --sponsorblock-remove all \
+           -o "$output_format" \
+           "$url"
 }
 
-mergeBranchToAmir() {
-    git checkout "$1" && git pull && git checkout Amir && git merge "$2" && git push
+# --- Audio Only Downloads ---
+
+yt_a() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: yt_a <url>" >&2
+        return 1
+    fi
+    local url="$1"
+    local output_format="$_YT_VIDEO_DIR/%(title)s.%(ext)s" # Note: No date prefix in original PS script
+
+    yt-dlp -f "ba" --extract-audio --audio-quality 0 \
+           --cookies "$_YT_COOKIES_FILE" \
+           --embed-chapters --embed-metadata --embed-info-json --embed-thumbnail \
+           --sponsorblock-remove all \
+           -o "$output_format" \
+           "$url"
 }
+
+yt_a_p() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: yt_a_p <playlist_url>" >&2
+        return 1
+    fi
+    local url="$1"
+    local output_format="$_YT_VIDEO_DIR/%(playlist)s/%(playlist_index)s - %(title)s.%(ext)s"
+
+    yt-dlp -f "ba" --extract-audio --audio-quality 0 \
+           --cookies "$_YT_COOKIES_FILE" \
+           --embed-chapters --embed-metadata --embed-info-json --embed-thumbnail \
+           --sponsorblock-remove all \
+           -o "$output_format" \
+           "$url"
+}
+
+# Optional: Unset global-like variables if desired (though underscore prefix usually indicates internal use)
+# unset _YT_VIDEO_DIR _YT_COOKIES_FILE
 
 # Dracula Theme (for zsh-syntax-highlighting)
 #
