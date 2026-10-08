@@ -1,0 +1,15 @@
+# GNOME Shell extensions installed from extensions.gnome.org (by UUID).
+# gnome/setup.sh downloads the build matching the running GNOME Shell version.
+all-in-one-clipboard@NiffirgkcaJ.github.com
+preserve-battery-health@marcosdalvarez.org
+layout-labels@bielarusajed.gay
+ds4battery@slie.ru
+vpn-indicator@fthx
+dynamic-music-pill@andbal
+
+# Provided by packages instead (see packages.txt), listed here for reference:
+#   user-theme@gnome-shell-extensions.gcampax.github.com            -> gnome-shell-extensions
+#   screenshot-window-sizer@gnome-shell-extensions.gcampax.github.com -> gnome-shell-extensions
+#   status-icons@gnome-shell-extensions.gcampax.github.com          -> gnome-shell-extensions
+#   appindicatorsupport@rgcjonas.gmail.com                          -> gnome-shell-extension-appindicator
+#   dash-to-dock@micxgx.gmail.com                                   -> gnome-shell-extension-dash-to-dock (AUR)
