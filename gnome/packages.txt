@@ -1,0 +1,22 @@
+# Packages the GNOME setup depends on. "aur:" prefix = install with yay.
+# Tools
+dconf
+curl
+unzip
+gnome-tweaks
+extension-manager
+# Extensions shipped as packages
+gnome-shell-extensions
+gnome-shell-extension-appindicator
+aur:gnome-shell-extension-dash-to-dock
+# Theme: GTK / shell, icons, cursors (WhiteSur)
+aur:whitesur-gtk-theme
+aur:whitesur-icon-theme
+aur:whitesur-cursor-theme-git
+# Fonts (GNOME Console uses MesloLGLDZ Nerd Font Mono; emoji; Persian)
+ttf-meslo-nerd
+noto-fonts-emoji
+aur:ttf-joypixels
+aur:vazirmatn-fonts
+aur:persian-fonts
+aur:borna-fonts
