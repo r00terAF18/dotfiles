@@ -1,0 +1,12 @@
+# Never commit credentials / caches
+*cookies*.txt
+*.sqlite
+*.sqlite-*
+auth.json
+.tiddl/*
+!home/.tiddl/
+home/.tiddl/*
+!home/.tiddl/config.toml
+.dotfiles-backup/
+*.bak
+!legacy/*.bak
