@@ -25,6 +25,13 @@ NC_FILES=(
 	"$HOME/.config/btop/themes/night-city.theme|$NC_DIST/btop/night-city.theme|link"
 	"$HOME/.config/fastfetch/config.jsonc|$NC_DIST/fastfetch/config.jsonc|link"
 	"$HOME/.config/fastfetch/kiroshi.txt|$NC_DIST/fastfetch/kiroshi.txt|link"
+	"$HOME/.config/fastfetch/night-city-afterlife.txt|$NC_DIST/fastfetch/night-city-afterlife.txt|link"
+	"$HOME/.config/fastfetch/judy-alvarez.txt|$NC_DIST/fastfetch/judy-alvarez.txt|link"
+	"$HOME/.config/fastfetch/judy-alvarez.jpg|$NC_DIR/assets/fetch/judy-alvarez.jpg|link"
+	"$HOME/.config/fastfetch/night-city-kiroshi.jpg|$NC_DIR/assets/fetch/night-city-kiroshi.jpg|link"
+	"$HOME/.config/neofetch/config.conf|$NC_DIST/neofetch/config.conf|link"
+	"$HOME/.config/neofetch/night-city-afterlife.txt|$NC_DIST/neofetch/night-city-afterlife.txt|link"
+	"$HOME/.config/neofetch/judy-alvarez.txt|$NC_DIST/neofetch/judy-alvarez.txt|link"
 	"$HOME/.config/cava/config|$NC_DIST/cava/config|link"
 	"$HOME/.config/burn-my-windows/profiles/night-city.conf|$NC_DIST/burn-my-windows/night-city.conf|copy"
 )

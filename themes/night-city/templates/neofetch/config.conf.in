@@ -1,0 +1,29 @@
+# Night City: image-forward Neofetch profile.
+# Switch to the bundled ASCII art with:
+# neofetch --backend ascii --source "$HOME/.config/neofetch/judy-alvarez.txt"
+
+print_info() {
+    info title
+    info underline
+
+    info "OS" distro
+    info "Host" model
+    info "Kernel" kernel
+    info "Uptime" uptime
+    info "Packages" packages
+    info "Shell" shell
+    info "DE" de
+    info "Terminal" term
+    info "CPU" cpu
+    info "GPU" gpu
+    info "Memory" memory
+
+    info cols
+}
+
+image_backend="kitty"
+image_source="${HOME}/.config/fastfetch/judy-alvarez.jpg"
+image_size="auto"
+crop_mode="fit"
+gap=3
+ascii_colors=(6 3 1)

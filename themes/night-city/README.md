@@ -37,6 +37,7 @@ themes/night-city/
 ├── palette.sh            colours (NC_* variables)
 ├── generate.sh           templates/**/*.in -> dist/ ({{name}}, {{name_hex}}, {{name_rgb}})
 ├── templates/            sources of everything below
+├── assets/fetch/         original Judy and Night City terminal images
 ├── dist/                 rendered files (what gets linked)
 │   ├── gtk-4.0/gtk.css           libadwaita: :root variables + @define-color, title font, neon headerbar line
 │   ├── gtk-3.0/gtk.css           adw-gtk3 colour overrides
@@ -47,12 +48,16 @@ themes/night-city/
 │   ├── btop/night-city.theme
 │   ├── fastfetch/config.jsonc
 │   ├── fastfetch/kiroshi.txt
+│   ├── fastfetch/night-city-afterlife.txt, judy-alvarez.txt
+│   ├── neofetch/config.conf and two custom ASCII logos
 │   ├── cava/config               cyan -> magenta -> red -> yellow gradient
 │   ├── mangohud/MangoHud.conf    your MangoHud keys/blacklist, recoloured
 │   ├── burn-my-windows/night-city.conf   TV-glitch open/close, yellow, 500 ms
 │   └── environment.d/60-night-city.conf  STARSHIP_CONFIG, MANGOHUD_CONFIGFILE
 ├── settings/dconf.txt    every dconf key the theme sets (key value)
 ├── lib/common.sh         paths, file list, packages, helpers shared by the scripts
+├── lib/optional.sh       cursor, window-border, Conky and Plymouth installers
+├── lib/conky_adapt.py    adapts the optional cyberpunk-conky HUD
 ├── lib/ncjson.py         JSON/GVariant helpers (settings.json, manifest, extension lists)
 ├── backup.sh
 ├── install.sh
@@ -74,7 +79,7 @@ themes/night-city/
 | starship | `STARSHIP_CONFIG` (environment.d for the session, plus `conf.d/night-city.fish` so new fish shells get it straight away) | `home/.config/starship.toml` |
 | fish | `~/.config/fish/conf.d/night-city.fish` (interactive only, `set -g fish_color_*`) | `config.fish`, universal vars |
 | btop | theme file + `color_theme = "night-city"` in `btop.conf` (old value saved) | |
-| Fastfetch | link `config.jsonc` and the Kiroshi-inspired ASCII optic `kiroshi.txt` | |
+| Fastfetch / Neofetch | Fastfetch defaults to Kiroshi ASCII; Neofetch defaults to Judy's portrait in Kitty. Both get Afterlife and Judy ASCII options plus two image options. | |
 | cava | link `config` | |
 | MangoHud | `MANGOHUD_CONFIGFILE` via environment.d (see below) | the `MangoHud.conf` symlink |
 | VS Code / Cursor | `Endormi.2077-theme` extension, `workbench.colorTheme` + `workbench.preferredDarkColorTheme` = `"2077"` | every other key |
@@ -86,6 +91,25 @@ owners of one path. MangoHud reads `MANGOHUD_CONFIGFILE` before its default path
 only adds `~/.config/environment.d/60-night-city.conf`, which points at its own recoloured copy.
 Uninstalling deletes that one link. Your file isn't touched. To change HUD keys while the theme is on,
 edit `templates/mangohud/MangoHud.conf.in` and re-run `./generate.sh`.
+
+### Fastfetch and Neofetch art
+
+The theme installs two original terminal images, the default Kiroshi optic, an Afterlife sign, and a Judy
+Alvarez / braindance ASCII portrait. Fastfetch keeps the Kiroshi mark as its default; Neofetch uses the Judy
+portrait image with Kitty's graphics protocol. Use these commands to switch among the bundled art:
+
+```sh
+# Fastfetch: ASCII art or either bundled image (in kitty)
+fastfetch --logo-type file --logo ~/.config/fastfetch/night-city-afterlife.txt
+fastfetch --logo-type file --logo ~/.config/fastfetch/judy-alvarez.txt
+fastfetch --logo-type kitty --logo ~/.config/fastfetch/judy-alvarez.jpg
+fastfetch --logo-type kitty --logo ~/.config/fastfetch/night-city-kiroshi.jpg
+
+# Neofetch: switch from the configured Judy image to custom ASCII or the city image
+neofetch --backend ascii --source ~/.config/neofetch/night-city-afterlife.txt
+neofetch --backend ascii --source ~/.config/neofetch/judy-alvarez.txt
+neofetch --backend kitty --source ~/.config/fastfetch/night-city-kiroshi.jpg
+```
 
 ## Packages (verified 2026-10-10, pacman first, then yay, all `--needed`, no Flatpak)
 
@@ -138,9 +162,10 @@ and the optional Plymouth boot splash.
    with comments/trailing commas is left alone, with a warning.
 10. Prints the next steps (log out/in, etc.).
 
-Optional parts are the Cyberpunk-Neon cursor (default), window border, Conky HUD, and Plymouth boot
-splash. `--yes` answers confirmation prompts but does not select optional parts; add their flags to opt in.
-The boot splash automation requires systemd-boot, dracut, and `kernel-install-for-dracut`.
+Cyberpunk-Neon is the default cursor; use `--cursor bibata` or `--cursor keep` to choose another
+behavior. The window border, Conky HUD, and Plymouth splash are interactive opt-ins, and `--yes` skips
+them unless `--borders`, `--with-conky`, or `--with-boot` is supplied. The boot splash automation
+requires systemd-boot, dracut, and `kernel-install-for-dracut`.
 
 ### `uninstall.sh [--dry-run] [--yes] [--backup DIR] [--remove-packages]`
 1. Uses the pre-theme backup (`active` marker), or the latest backup taken while the theme was off, or `--backup DIR`.
