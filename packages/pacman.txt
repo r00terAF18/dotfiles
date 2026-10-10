@@ -262,3 +262,14 @@ xorg-xrandr
 xterm
 yay
 yt-dlp
+ast-grep
+universal-ctags
+tree-sitter-cli
+jq
+go-yq
+bat
+tokei
+difftastic
+git-delta
+pyright
+typescript-language-server

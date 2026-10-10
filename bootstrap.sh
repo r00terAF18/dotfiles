@@ -14,9 +14,10 @@ step() {
 	"$@"
 }
 
-step "1/3 Install packages (pacman + AUR)" "$REPO_DIR/packages/install.sh"
-step "2/3 Symlink dotfiles into \$HOME (existing files are backed up)" "$REPO_DIR/install.sh"
-step "3/3 Restore GNOME settings, themes and extensions" "$REPO_DIR/gnome/setup.sh"
+step "1/4 Install packages (pacman + AUR)" "$REPO_DIR/packages/install.sh"
+step "2/4 Symlink dotfiles into \$HOME (existing files are backed up)" "$REPO_DIR/install.sh"
+step "3/4 Restore GNOME settings, themes and extensions" "$REPO_DIR/gnome/setup.sh"
+step "4/4 Set up coding-agent tools (Serena, Context7, Repomix) for Cursor and GapCode" "$REPO_DIR/ai-tools/setup.sh"
 
 echo
 echo "All done. See SYSTEM.md for one-time system tweaks (services etc.), then log out and back in."

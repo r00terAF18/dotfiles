@@ -43,3 +43,11 @@ Notes:
 - Links are per file, so apps can still drop extra files next to them (e.g. `~/.config/fish/fish_variables`) without touching the repo.
 - Some apps save by replacing the file (e.g. Goverlay for `MangoHud.conf`). If a link turns back into a regular file, copy it into `home/` and re-run `./install.sh`.
 - No Flatpak anywhere, on purpose.
+
+## Coding-agent tools (`ai-tools/`)
+
+`ai-tools/setup.sh` installs [Serena](https://github.com/oraios/serena) as a uv tool and registers
+Serena, [Context7](https://github.com/upstash/context7) and [Repomix](https://github.com/yamadashy/repomix)
+as MCP servers. Cursor's config lives in `home/.cursor/mcp.json` (symlinked by `install.sh`); GapCode
+rewrites its own `config.toml`, so it's configured through `gapcode mcp add` instead of a symlink.
+The matching CLI tools (ast-grep, ctags, tree-sitter, jq/yq, language servers, ...) are in `packages/pacman.txt`.
