@@ -1,0 +1,32 @@
+# dconf keys Night City writes: "<key> <GVariant value>", one per line.
+# backup.sh records the current value of each key (or that it is unset), install.sh writes
+# these values, and uninstall.sh puts back exactly what was there (or resets the key).
+# Extension keys can be written before the extension is installed; dconf doesn't need the schema.
+
+# ---- Appearance ----
+/org/gnome/desktop/interface/color-scheme 'prefer-dark'
+/org/gnome/desktop/interface/accent-color 'yellow'
+/org/gnome/desktop/interface/gtk-theme 'adw-gtk3-dark'
+/org/gnome/desktop/interface/icon-theme 'Papirus-Dark'
+/org/gnome/desktop/interface/cursor-theme 'Bibata-Modern-Amber'
+# Rajdhani only for window titles; the main UI font stays as it is
+/org/gnome/desktop/wm/preferences/titlebar-font 'Rajdhani Bold 12'
+/org/gnome/shell/extensions/user-theme/name 'NightCity'
+
+# ---- Blur my Shell: darker blur so the neon reads well ----
+/org/gnome/shell/extensions/blur-my-shell/panel/blur true
+/org/gnome/shell/extensions/blur-my-shell/panel/sigma 30
+/org/gnome/shell/extensions/blur-my-shell/panel/brightness 0.45
+/org/gnome/shell/extensions/blur-my-shell/panel/force-light-text true
+/org/gnome/shell/extensions/blur-my-shell/dash-to-dock/blur true
+/org/gnome/shell/extensions/blur-my-shell/dash-to-dock/brightness 0.5
+/org/gnome/shell/extensions/blur-my-shell/applications/blur false
+# 2 = dark components in the overview, 3 = dark app-folder dialogs
+/org/gnome/shell/extensions/blur-my-shell/overview/style-components 2
+/org/gnome/shell/extensions/blur-my-shell/appfolder/style-dialogs 3
+
+# ---- Just Perfection: a few calm tweaks, nothing hidden ----
+/org/gnome/shell/extensions/just-perfection/workspace-popup false
+/org/gnome/shell/extensions/just-perfection/window-demands-attention-focus true
+# start on the desktop instead of the overview
+/org/gnome/shell/extensions/just-perfection/startup-status 0
