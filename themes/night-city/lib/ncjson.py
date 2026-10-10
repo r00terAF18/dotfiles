@@ -9,11 +9,14 @@
   gv-has LIST ITEM                   exit 0 if ITEM is in the list
   manifest-build DIR                 write DIR/manifest.json from the files backup.sh staged
   manifest-get MANIFEST PATH         print a value (dotted path); strings raw, others as JSON
-  manifest-files MANIFEST            files section as TSV: target kind link saved parent_existed
+  manifest-files MANIFEST            files section, one line per file, fields separated by \x1f
+                                     (non-whitespace, so empty fields survive `read`):
+                                     target kind link saved parent_existed
   state-json DIR                     write DIR/state.json from DIR/state.tsv
 """
 import ast
 import json
+import shutil
 import os
 import sys
 from datetime import datetime
@@ -43,11 +46,20 @@ def load_settings(path):
 
 
 def save_settings(path, data):
+    # keep the file's trailing-newline habit (VS Code writes none)
+    newline = True
+    if os.path.exists(path):
+        with open(path, "rb") as f:
+            raw = f.read()
+        newline = raw.endswith(b"\n") or not raw.strip()
     os.makedirs(os.path.dirname(path), exist_ok=True)
     tmp = path + ".night-city.tmp"
     with open(tmp, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
-        f.write("\n")
+        if newline:
+            f.write("\n")
+    if os.path.exists(path):
+        shutil.copymode(path, tmp)
     os.replace(tmp, path)
 
 
@@ -78,6 +90,21 @@ def editor_restore(path, manifest, name):
     rec = ed["settings"]
     updates = {k: (rec["values"][k] if rec["present"][k] else None) for k in rec["present"]}
     editor_set(path, json.dumps(updates))
+    # If the result is exactly what the backup saw, put the saved bytes back
+    # so even the formatting is the original.
+    home = os.path.expanduser("~")
+    if path.startswith(home + "/"):
+        saved = os.path.join(os.path.dirname(os.path.abspath(manifest)), "files", path[len(home) + 1:])
+        if os.path.isfile(saved):
+            try:
+                with open(saved, encoding="utf-8") as f:
+                    orig = json.loads(f.read() or "{}")
+                with open(path, encoding="utf-8") as f:
+                    now = json.load(f)
+            except (OSError, json.JSONDecodeError):
+                return
+            if orig == now:
+                shutil.copyfile(saved, path)
 
 
 # ---- GVariant string lists ("['a', 'b']" or "@as []") ----
@@ -166,6 +193,7 @@ def manifest_build(d):
             "link": misc.pop("mangohud_link", "") or None,
         },
         "fonts_dir_existed": misc.pop("fonts_dir_existed", "0") == "1",
+        "missing_dirs": [r[0] for r in read_tsv(os.path.join(d, "missing-dirs.txt"), 1)],
     }
     eddir = os.path.join(d, "editors")
     if os.path.isdir(eddir):
@@ -200,7 +228,7 @@ def manifest_files(path):
     with open(path, encoding="utf-8") as f:
         m = json.load(f)
     for e in m["files"]:
-        print("\t".join([e["target"], e["kind"], e["link"] or "", e["saved"] or "", "1" if e["parent_existed"] else "0"]))
+        print("\x1f".join([e["target"], e["kind"], e["link"] or "", e["saved"] or "", "1" if e["parent_existed"] else "0"]))
 
 
 def state_json(d):

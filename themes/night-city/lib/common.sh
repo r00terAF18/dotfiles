@@ -151,6 +151,24 @@ is_ours() {
 	esac
 }
 
+# Compare two dconf values; numbers compare numerically (dconf prints 0.45 as 0.45000000000000001).
+same_value() {
+	[[ "$1" == "$2" ]] && return 0
+	[[ "$1" =~ ^-?[0-9.]+$ && "$2" =~ ^-?[0-9.]+$ ]] && awk -v a="$1" -v b="$2" 'BEGIN { exit !(a + 0 == b + 0) }'
+}
+
+# Highest missing directory above a path ("" if its parent already exists), so uninstall can
+# remove directories the theme created once they're empty again.
+missing_root() {
+	local p root=''
+	p="$(dirname "$1")"
+	while [[ ! -e "$p" && "$p" != / ]]; do
+		root="$p"
+		p="$(dirname "$p")"
+	done
+	echo "$root"
+}
+
 shell_major() { gnome-shell --version 2>/dev/null | grep -oE '[0-9]+' | head -1; }
 
 papirus_current_color() {

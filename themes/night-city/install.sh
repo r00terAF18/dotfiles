@@ -222,7 +222,7 @@ fi
 say "GNOME settings (dconf)"
 while read -r key value; do
 	cur="$(dconf read "$key")"
-	if [[ "$cur" == "$value" ]]; then
+	if same_value "$cur" "$value"; then
 		ok "${key#/org/gnome/} = $value (already)"
 		continue
 	fi

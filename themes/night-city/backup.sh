@@ -161,6 +161,13 @@ fi
 
 if [[ -d "$FONT_DIR" ]]; then misc fonts_dir_existed 1; else misc fonts_dir_existed 0; fi
 
+# Directories that don't exist yet (uninstall.sh removes them again if they end up empty)
+for path in "${NC_FILES[@]%%|*}" "$FONT_DIR/x" "$BTOP_CONF" "${EGO_EXTENSIONS[@]/#/$HOME/.local/share/gnome-shell/extensions/}"; do
+	root="$(missing_root "$path")"
+	[[ -n "$root" ]] && printf '%s\n' "$root" >>"$OUT/missing-dirs.txt"
+done
+[[ -f "$OUT/missing-dirs.txt" ]] && sort -u -o "$OUT/missing-dirs.txt" "$OUT/missing-dirs.txt"
+
 # ---- editors ----
 say "Editors"
 for entry in "${NC_EDITORS[@]}"; do
