@@ -318,6 +318,12 @@ if [[ -n "$(state conky_dir)$(state autostart)" ]]; then
 		[[ -d "$parent" ]] && run rmdir --ignore-fail-on-non-empty "$parent"
 	done <<<"$(state conky_dir)"
 fi
+# Directories install.sh created for the optional parts, if they're empty now
+while read -r d; do
+	[[ -n "$d" && -d "$d" ]] || continue
+	run rmdir --ignore-fail-on-non-empty "$d"
+	[[ -d "$d" ]] || ok "removed empty ${d/#$HOME/\~}"
+done <<<"$(state made_dir)"
 # Boot splash: needs sudo, so it's confirmed separately.
 added_words="$(state cmdline_added | tr '\n' ' ')"
 boot_dirs="$(state root_dir)" boot_created="$(state root_created)" boot_saved="$(state_rows root_backup)"
@@ -337,6 +343,11 @@ if [[ -n "$added_words$boot_dirs$boot_created$boot_saved$(state initramfs)" ]]; 
 			if [[ "$new_cmdline" == *root=* ]]; then
 				f="$(mktemp)"
 				echo "$new_cmdline" >"$f"
+				# Same words as before the install? Then put the original file back byte for byte.
+				orig="$(state cmdline_saved | head -1)"
+				if [[ -f "$orig" && "$(tr -s ' \n' ' ' <"$orig" | sed 's/ *$//')" == "$new_cmdline" ]]; then
+					cp "$orig" "$f"
+				fi
 				run sudo install -m 644 "$f" "$KERNEL_CMDLINE" && ok "$KERNEL_CMDLINE: removed ${added_words% }" || warn "writing $KERNEL_CMDLINE failed"
 				rm -f "$f"
 			else

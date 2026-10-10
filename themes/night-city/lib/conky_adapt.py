@@ -8,6 +8,7 @@ Only the documented template values and window size are changed, plus:
   - out_to_x = true / out_to_wayland = false: GNOME's compositor has no wlr-layer-shell, so
     conky's Wayland output can't run there; it draws through XWayland instead.
   - neofetch (not in Arch's repos any more) -> fastfetch with the same "Key: value" lines.
+  - the Lua's screen-size fallback (conky has no ${screen_width}) set to the detected size.
   - the two HUD colours nudged to the palette (cyan 00FFFF -> 00F0FF, red EA4A5A -> FF003C).
 """
 import os
@@ -81,6 +82,14 @@ if old_fetch in lua:
     )
 else:
     print("note: neofetch call not found; SYSTEM INFO box left as shipped", file=sys.stderr)
+# conky 1.2x has no ${screen_width}/${screen_height}, so the script fell back to 2560x1440 and
+# laid the HUD out for a bigger screen than this one. Use the detected size as the fallback.
+for var, key in (("screen_width", "width"), ("screen_height", "height")):
+    lua, n = re.subn(
+        rf'(tonumber\(conky_parse\("\$\{{{var}\}}"\)\)\s*or\s*)\d+', rf"\g<1>{opt[key]}", lua
+    )
+    if n != 1:
+        print(f"note: {var} fallback not found; layout may assume another screen size", file=sys.stderr)
 lua = lua.replace("00FFFF", "00F0FF").replace("EA4A5A", "FF003C")
 open(lua_path, "w", encoding="utf-8").write(lua)
 

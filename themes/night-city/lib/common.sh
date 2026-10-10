@@ -246,6 +246,10 @@ for n in range(1, 10):
 		fi
 	done
 	[[ -n "$name" && "$link" == http* ]] || return 1
+	if ((DRY_RUN)); then
+		echo "<$name, downloaded from pling into ${DOWNLOAD_CACHE/#$HOME/\~} (fails if the CDN is filtered)>"
+		return 0
+	fi
 	mkdir -p "$DOWNLOAD_CACHE"
 	if curl -fsL --connect-timeout 15 --max-time 180 -o "$DOWNLOAD_CACHE/$name.part" "$link" &&
 		md5ok "$DOWNLOAD_CACHE/$name.part"; then

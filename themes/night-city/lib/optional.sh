@@ -210,6 +210,7 @@ install_conky() {
 		ok "autostart entry already there"
 	else
 		[[ -e "$CONKY_AUTOSTART" ]] && { warn "${CONKY_AUTOSTART/#$HOME/\~} exists and isn't the theme's; not touching it"; return; }
+		[[ -d "$(dirname "$CONKY_AUTOSTART")" ]] || record made_dir "$(dirname "$CONKY_AUTOSTART")"
 		run mkdir -p "$(dirname "$CONKY_AUTOSTART")"
 		if ((DRY_RUN)); then
 			run write "$CONKY_AUTOSTART" "(Exec=sh -c \"sleep 8; exec conky -q -c $conf\")"
@@ -317,6 +318,7 @@ install_boot() {
 	fi
 	if ((${#add[@]})); then
 		record cmdline_added "${add[*]}"
+		record cmdline_saved "$saved/etc/kernel/cmdline"
 		local f
 		f="$(mktemp)"
 		echo "$new" >"$f"
