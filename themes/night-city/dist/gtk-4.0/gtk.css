@@ -1,0 +1,152 @@
+/* Night City (Cyberpunk 2077) for GTK4 / libadwaita.
+ * Generated from themes/night-city/palette.sh by generate.sh; edit the template, not dist/.
+ * Linked to ~/.config/gtk-4.0/gtk.css by install.sh. Restart apps to see changes.
+ *
+ * libadwaita ignores GTK themes, but it does read this user stylesheet, which has the
+ * highest priority. libadwaita >= 1.6 uses the CSS variables in :root; the @define-color
+ * names keep older libadwaita and plain GTK4 apps in line. These colours are dark, so the
+ * theme expects color-scheme = prefer-dark (install.sh sets it).
+ */
+
+@define-color accent_bg_color #FCEE0A;
+@define-color accent_fg_color #0A0A0F;
+@define-color accent_color #FCEE0A;
+@define-color destructive_bg_color #FF003C;
+@define-color destructive_fg_color #ffffff;
+@define-color destructive_color #FF4D6D;
+@define-color success_bg_color #00FF9F;
+@define-color success_fg_color #0A0A0F;
+@define-color success_color #00FF9F;
+@define-color warning_bg_color #FF8A00;
+@define-color warning_fg_color #0A0A0F;
+@define-color warning_color #FF8A00;
+@define-color error_bg_color #FF003C;
+@define-color error_fg_color #ffffff;
+@define-color error_color #FF4D6D;
+@define-color window_bg_color #0A0A0F;
+@define-color window_fg_color #E4F7F7;
+@define-color view_bg_color #12131A;
+@define-color view_fg_color #E4F7F7;
+@define-color headerbar_bg_color #0A0A0F;
+@define-color headerbar_fg_color #E4F7F7;
+@define-color headerbar_border_color #FCEE0A;
+@define-color headerbar_backdrop_color #0A0A0F;
+@define-color headerbar_shade_color rgba(0, 0, 0, 0.6);
+@define-color sidebar_bg_color #12131A;
+@define-color sidebar_fg_color #E4F7F7;
+@define-color sidebar_backdrop_color #12131A;
+@define-color sidebar_shade_color rgba(0, 0, 0, 0.36);
+@define-color sidebar_border_color #2A2D3A;
+@define-color secondary_sidebar_bg_color #12131A;
+@define-color secondary_sidebar_fg_color #E4F7F7;
+@define-color secondary_sidebar_backdrop_color #12131A;
+@define-color secondary_sidebar_shade_color rgba(0, 0, 0, 0.36);
+@define-color secondary_sidebar_border_color #2A2D3A;
+@define-color card_bg_color #1B1D26;
+@define-color card_fg_color #E4F7F7;
+@define-color card_shade_color rgba(0, 0, 0, 0.36);
+@define-color dialog_bg_color #12131A;
+@define-color dialog_fg_color #E4F7F7;
+@define-color popover_bg_color #12131A;
+@define-color popover_fg_color #E4F7F7;
+@define-color popover_shade_color rgba(0, 0, 0, 0.5);
+@define-color thumbnail_bg_color #1B1D26;
+@define-color thumbnail_fg_color #E4F7F7;
+@define-color shade_color rgba(0, 0, 0, 0.5);
+@define-color scrollbar_outline_color rgba(0, 0, 0, 0.5);
+
+:root {
+  /* GNOME's accent presets, remapped to the palette (Settings > Appearance still works) */
+  --accent-blue: #3D7BFF;
+  --accent-teal: #00F0FF;
+  --accent-green: #00FF9F;
+  --accent-yellow: #FCEE0A;
+  --accent-orange: #FF8A00;
+  --accent-red: #FF003C;
+  --accent-pink: #FF2BD6;
+  --accent-purple: #B967FF;
+  --accent-slate: #7A8C99;
+
+  /* The accent itself: neon yellow with black text on it */
+  --accent-bg-color: #FCEE0A;
+  --accent-fg-color: #0A0A0F;
+  --accent-color: #FCEE0A;
+
+  --destructive-bg-color: #FF003C;
+  --destructive-fg-color: #ffffff;
+  --destructive-color: #FF4D6D;
+  --success-bg-color: #00FF9F;
+  --success-fg-color: #0A0A0F;
+  --success-color: #00FF9F;
+  --warning-bg-color: #FF8A00;
+  --warning-fg-color: #0A0A0F;
+  --warning-color: #FF8A00;
+  --error-bg-color: #FF003C;
+  --error-fg-color: #ffffff;
+  --error-color: #FF4D6D;
+
+  --window-bg-color: #0A0A0F;
+  --window-fg-color: #E4F7F7;
+  --view-bg-color: #12131A;
+  --view-fg-color: #E4F7F7;
+  --headerbar-bg-color: #0A0A0F;
+  --headerbar-fg-color: #E4F7F7;
+  --headerbar-border-color: #FCEE0A;
+  --headerbar-backdrop-color: #0A0A0F;
+  --headerbar-shade-color: rgba(0, 0, 0, 0.6);
+  --sidebar-bg-color: #12131A;
+  --sidebar-fg-color: #E4F7F7;
+  --sidebar-backdrop-color: #12131A;
+  --sidebar-shade-color: rgba(0, 0, 0, 0.36);
+  --sidebar-border-color: #2A2D3A;
+  --secondary-sidebar-bg-color: #12131A;
+  --secondary-sidebar-fg-color: #E4F7F7;
+  --secondary-sidebar-backdrop-color: #12131A;
+  --secondary-sidebar-shade-color: rgba(0, 0, 0, 0.36);
+  --secondary-sidebar-border-color: #2A2D3A;
+  --card-bg-color: #1B1D26;
+  --card-fg-color: #E4F7F7;
+  --card-shade-color: rgba(0, 0, 0, 0.36);
+  --dialog-bg-color: #12131A;
+  --dialog-fg-color: #E4F7F7;
+  --popover-bg-color: #12131A;
+  --popover-fg-color: #E4F7F7;
+  --popover-shade-color: rgba(0, 0, 0, 0.5);
+  --thumbnail-bg-color: #1B1D26;
+  --thumbnail-fg-color: #E4F7F7;
+  --shade-color: rgba(0, 0, 0, 0.5);
+  --scrollbar-outline-color: rgba(0, 0, 0, 0.5);
+}
+
+/* ---- Neon details (kept small so app layouts don't break) ---- */
+
+/* Window titles in Rajdhani, the font of the game's HUD (falls back if it isn't installed) */
+headerbar .title,
+windowtitle .title {
+  font-family: "Rajdhani", sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* Thin neon line under header bars */
+headerbar {
+  box-shadow: inset 0 -1px alpha(#FCEE0A, 0.35);
+}
+
+/* Selected sidebar row gets a yellow edge, like the game's menus */
+.navigation-sidebar > row:selected,
+.sidebar-pane row:selected {
+  box-shadow: inset 3px 0 #FCEE0A;
+}
+
+/* Cyan focus rings */
+*:focus-visible {
+  outline-color: alpha(#00F0FF, 0.7);
+}
+
+/* Text selection */
+selection,
+text selection {
+  background-color: alpha(#00F0FF, 0.35);
+  color: #E4F7F7;
+}

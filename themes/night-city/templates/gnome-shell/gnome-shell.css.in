@@ -1,0 +1,155 @@
+/* NightCity: a minimal Cyberpunk 2077 GNOME Shell theme (GNOME 47-51).
+ * Generated from themes/night-city/palette.sh by generate.sh; edit the template, not dist/.
+ *
+ * Loaded by the User Themes extension (user-theme name = 'NightCity'). GNOME Shell always
+ * loads its built-in stylesheet first, so this file only overrides colours and borders on
+ * top of it. Layout, sizes and animations stay stock. Blur my Shell may draw the panel
+ * background itself; the neon line under the panel still shows.
+ */
+
+/* ---- Top panel ---- */
+#panel {
+  background-color: {{bg0}};
+  border-bottom: 1px solid rgba({{yellow_rgb}}, 0.55);
+}
+
+#panel .panel-button {
+  color: {{fg}};
+}
+
+#panel .panel-button:hover {
+  background-color: rgba({{yellow_rgb}}, 0.15);
+  color: {{yellow}};
+}
+
+#panel .panel-button:active,
+#panel .panel-button:overview,
+#panel .panel-button:focus,
+#panel .panel-button:checked {
+  background-color: {{yellow}};
+  color: {{bg0}};
+  box-shadow: none;
+}
+
+#panel .clock {
+  font-family: "Rajdhani", sans-serif;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+/* ---- Menus and Quick Settings ---- */
+.popup-menu-content,
+.candidate-popup-content {
+  background-color: {{bg1}};
+  color: {{fg}};
+  border: 1px solid rgba({{yellow_rgb}}, 0.45);
+}
+
+.popup-menu-item:hover,
+.popup-menu-item:focus,
+.popup-menu-item:selected {
+  background-color: rgba({{yellow_rgb}}, 0.14);
+  color: {{yellow}};
+}
+
+.popup-menu-item:active,
+.popup-menu-item:checked {
+  background-color: {{yellow}};
+  color: {{bg0}};
+}
+
+.popup-separator-menu-item-separator {
+  background-color: rgba({{cyan_rgb}}, 0.25);
+}
+
+.quick-toggle {
+  background-color: {{bg2}};
+  color: {{fg}};
+}
+
+.quick-toggle:hover {
+  background-color: {{border}};
+}
+
+.quick-toggle:checked {
+  background-color: {{yellow}};
+  color: {{bg0}};
+}
+
+.quick-toggle:checked:hover {
+  background-color: {{yellow_dim}};
+}
+
+.quick-toggle-menu {
+  background-color: {{bg2}};
+  border: 1px solid rgba({{cyan_rgb}}, 0.35);
+}
+
+.slider {
+  color: {{yellow}};
+  -barlevel-active-background-color: {{yellow}};
+  -barlevel-background-color: {{bg2}};
+}
+
+/* ---- Notifications and calendar ---- */
+.message {
+  background-color: {{bg1}};
+  border: 1px solid rgba({{cyan_rgb}}, 0.35);
+}
+
+.message:hover {
+  background-color: {{bg2}};
+}
+
+.message-title {
+  color: {{yellow}};
+}
+
+.calendar-today,
+.calendar-today:selected {
+  background-color: {{yellow}};
+  color: {{bg0}};
+}
+
+/* ---- Overview: search, dash, app folders ---- */
+.search-entry {
+  background-color: {{bg1}};
+  color: {{fg}};
+  border: 1px solid rgba({{cyan_rgb}}, 0.5);
+}
+
+.search-entry:focus {
+  border-color: {{yellow}};
+}
+
+#dash .dash-background {
+  background-color: rgba({{bg0_rgb}}, 0.85);
+  border: 1px solid rgba({{yellow_rgb}}, 0.35);
+}
+
+/* ---- Pop-ups: volume/brightness OSD, Alt+Tab, dialogs ---- */
+.osd-window {
+  background-color: {{bg1}};
+  color: {{fg}};
+  border: 1px solid rgba({{yellow_rgb}}, 0.6);
+}
+
+.osd-window .level {
+  -barlevel-active-background-color: {{yellow}};
+  -barlevel-background-color: {{bg2}};
+}
+
+.switcher-list {
+  background-color: {{bg1}};
+  border: 1px solid rgba({{yellow_rgb}}, 0.45);
+}
+
+.switcher-list .item-box:selected {
+  background-color: rgba({{yellow_rgb}}, 0.18);
+}
+
+.modal-dialog {
+  background-color: {{bg1}};
+  color: {{fg}};
+  border: 1px solid rgba({{yellow_rgb}}, 0.45);
+}
