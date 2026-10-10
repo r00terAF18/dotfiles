@@ -94,9 +94,19 @@ die() { printf '%serror:%s %s\n' "$C_RED" "$C_RESET" "$*" >&2; exit 1; }
 # Run a command, or only print it in dry-run mode.
 run() {
 	if ((DRY_RUN)); then
-		printf '  %s[dry-run]%s' "$C_DIM" "$C_RESET"
-		printf ' %q' "$@"
-		printf '\n'
+		local a out=''
+		for a in "$@"; do
+			if [[ "$a" =~ ^[A-Za-z0-9_./@:=,+%~-]+$ ]]; then
+				out+=" $a"
+			elif [[ "$a" != *\'* ]]; then
+				out+=" '$a'"
+			elif [[ "$a" != *[\"\$\`\\]* ]]; then
+				out+=" \"$a\""
+			else
+				out+=" $(printf '%q' "$a")"
+			fi
+		done
+		printf '  %s[dry-run]%s%s\n' "$C_DIM" "$C_RESET" "$out"
 	else
 		"$@"
 	fi
