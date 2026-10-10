@@ -3,7 +3,10 @@
 #   1. files: remove the theme's links/copies; put back what was there before (or nothing)
 #   2. btop color_theme, dconf keys, enabled/disabled extensions
 #   3. VS Code / Cursor theme keys, papirus-folders colour
-#   4. --remove-packages: also remove what the theme installed (packages, the EGO extension,
+#   4. optional parts: the Cyberpunk-Neon cursor, the window-border extension (Night City Glow
+#      or Highlight Focus), the conky HUD (stopped, autostart entry and files removed), and the
+#      boot splash (asks; sudo: kernel command line, dracut config, Plymouth theme, initramfs)
+#   5. --remove-packages: also remove what the theme installed (packages, the EGO extension,
 #      the editor theme extension, the Rajdhani font); never anything that was there before
 # Uses the pre-theme backup by default (~/.night-city-backup/active), or the latest one taken
 # while the theme wasn't active. Settings you changed yourself after installing are left alone.
@@ -24,7 +27,7 @@ while (($#)); do
 	-y | --yes) YES=1 ;;
 	--backup) BACKUP="${2:?--backup needs a directory}"; shift ;;
 	--remove-packages) REMOVE_PKGS=1 ;;
-	-h | --help) sed -n '2,13p' "$0"; exit 0 ;;
+	-h | --help) sed -n '2,16p' "$0"; exit 0 ;;
 	*) die "unknown option: $1" ;;
 	esac
 	shift
@@ -66,6 +69,8 @@ for d in "$BACKUP_ROOT"/2*; do
 done
 state() { awk -F'\t' -v k="$1" '$1 == k { print $2 }' "$STATE_ROWS" | awk '!seen[$0]++'; }
 state_first() { awk -F'\t' -v k="$1" '$1 == k { print $2 "\t" $3; exit }' "$STATE_ROWS"; }
+# All rows of one kind, without the kind column (tab-separated, in install order).
+state_rows() { awk -F'\t' -v k="$1" 'BEGIN { OFS = "\t" } $1 == k { $1 = ""; sub(/^\t/, ""); print }' "$STATE_ROWS"; }
 
 confirm "Restore your previous setup from this backup?" || die "cancelled"
 
@@ -134,15 +139,28 @@ fi
 
 # ---- 2. dconf ----
 say "GNOME settings (dconf)"
+# The value the theme wrote: the last one logged by install.sh, else settings/dconf.txt.
+# Older logs don't carry the value; "@CURSOR@" then matches any of the theme's cursors.
 declare -A THEME_VAL
 while read -r key value; do THEME_VAL["$key"]="$value"; done < <(dconf_keys)
+while IFS=$'\t' read -r key value; do
+	[[ -n "$value" ]] && THEME_VAL["$key"]="$value"
+done < <(state_rows dconf)
+is_theme_value() {
+	local cur="$1" theme="$2" c
+	if [[ "$theme" == *@CURSOR@* ]]; then
+		for c in "${CURSOR_NAMES[@]}"; do [[ "$cur" == "'$c'" ]] && return 0; done
+		return 1
+	fi
+	same_value "$cur" "$theme"
+}
 while IFS=$'\t' read -r key is_set value; do
 	cur="$(dconf read "$key")"
 	theme="${THEME_VAL[$key]:-}"
 	[[ -n "$theme" ]] || continue
 	if [[ "$is_set" == set ]] && same_value "$cur" "$value" || [[ "$is_set" == unset && -z "$cur" ]]; then
 		ok "${key#/org/gnome/} (already original)"
-	elif ! same_value "$cur" "$theme"; then
+	elif ! is_theme_value "$cur" "$theme"; then
 		warn "${key#/org/gnome/} is $cur now (you changed it); left alone"
 	elif [[ "$is_set" == set ]]; then
 		run dconf write "$key" "$value"
@@ -186,6 +204,27 @@ done <<<"$(state ext_undisabled)"
 [[ "$new_dis" == "$dis" ]] || run dconf write /org/gnome/shell/disabled-extensions "$new_dis"
 [[ "$new_en" == "$en" && "$new_dis" == "$dis" ]] && ok "extension lists unchanged"
 
+# Extension settings written outside settings/dconf.txt (Highlight Focus): first old value, last new value.
+declare -A EXTRA_OLD EXTRA_NEW
+while IFS=$'\t' read -r key is_set old new; do
+	[[ -n "$key" ]] || continue
+	[[ -n "${EXTRA_OLD[$key]+x}" ]] || EXTRA_OLD["$key"]="$is_set"$'\t'"$old"
+	EXTRA_NEW["$key"]="$new"
+done < <(state_rows dconf_extra)
+for key in "${!EXTRA_NEW[@]}"; do
+	cur="$(dconf read "$key")"
+	IFS=$'\t' read -r is_set old <<<"${EXTRA_OLD[$key]}"
+	if ! same_value "$cur" "${EXTRA_NEW[$key]}"; then
+		warn "${key#/org/gnome/} is ${cur:-unset} now (you changed it); left alone"
+	elif [[ "$is_set" == set ]]; then
+		run dconf write "$key" "$old"
+		ok "${key#/org/gnome/} = $old"
+	else
+		run dconf reset "$key"
+		ok "${key#/org/gnome/} reset to default"
+	fi
+done
+
 # ---- 3. editors and folder colour ----
 say "VS Code / Cursor"
 for entry in "${NC_EDITORS[@]}"; do
@@ -220,7 +259,124 @@ else
 	ok "nothing to undo"
 fi
 
-# ---- 4. things the theme installed ----
+# ---- 4. optional parts ----
+say "Optional parts"
+any_optional=0
+# Window border extensions (already disabled above)
+while read -r link; do
+	[[ -n "$link" ]] || continue
+	any_optional=1
+	if [[ -L "$link" && "$(readlink "$link")" == "$GLOW_SRC" ]]; then
+		run rm -f "$link"
+		ok "removed ${link/#$HOME/\~} (Night City Glow; the running shell drops it at logout)"
+	else
+		ok "${link/#$HOME/\~} (not the theme's link any more, nothing to do)"
+	fi
+done <<<"$(state ext_link)"
+while read -r uuid; do
+	[[ -n "$uuid" ]] || continue
+	any_optional=1
+	d="$HOME/.local/share/gnome-shell/extensions/$uuid"
+	[[ -d "$d" ]] || continue
+	if ((DRY_RUN)); then
+		run gnome-extensions uninstall "$uuid"
+	else
+		gnome-extensions uninstall "$uuid" 2>/dev/null || rm -rf "$d"
+	fi
+	ok "removed extension $uuid"
+done <<<"$(state ego_border)"
+# Cyberpunk-Neon cursor (cursor-theme was put back with the other dconf keys)
+while read -r d; do
+	[[ -n "$d" ]] || continue
+	any_optional=1
+	if [[ -d "$d" && "$d" == "$ICONS_DIR/"* ]]; then
+		run rm -rf "$d"
+		ok "removed ${d/#$HOME/\~}"
+	fi
+done <<<"$(state cursor_dir)"
+# conky HUD
+if [[ -n "$(state conky_dir)$(state autostart)" ]]; then
+	any_optional=1
+	if pgrep -u "$USER" -f "conky.*$CONKY_DIR" >/dev/null 2>&1; then
+		run pkill -u "$USER" -f "conky.*$CONKY_DIR"
+		ok "stopped the conky HUD"
+	fi
+	while read -r f; do
+		[[ -n "$f" && -f "$f" ]] || continue
+		if grep -q 'night-city' "$f"; then
+			run rm -f "$f"
+			ok "removed ${f/#$HOME/\~}"
+		else
+			warn "${f/#$HOME/\~} was changed; left alone"
+		fi
+	done <<<"$(state autostart)"
+	while read -r d; do
+		[[ -n "$d" && -d "$d" && -f "$d/.night-city" ]] || continue
+		run rm -rf "$d"
+		ok "removed ${d/#$HOME/\~}"
+		parent="$(dirname "$d")"
+		[[ -d "$parent" ]] && run rmdir --ignore-fail-on-non-empty "$parent"
+	done <<<"$(state conky_dir)"
+fi
+# Boot splash: needs sudo, so it's confirmed separately.
+added_words="$(state cmdline_added | tr '\n' ' ')"
+boot_dirs="$(state root_dir)" boot_created="$(state root_created)" boot_saved="$(state_rows root_backup)"
+if [[ -n "$added_words$boot_dirs$boot_created$boot_saved$(state initramfs)" ]]; then
+	any_optional=1
+	info "Boot splash: undo the kernel command line, dracut and Plymouth changes, then rebuild the initramfs (sudo)."
+	cur_cmdline="$(tr -s ' \n' ' ' <"$KERNEL_CMDLINE" | sed 's/ *$//')"
+	new_cmdline="$cur_cmdline"
+	for w in $added_words; do
+		new_cmdline="$(sed -E "s/(^| )$w( |$)/\1\2/; s/  +/ /g; s/^ //; s/ $//" <<<"$new_cmdline")"
+	done
+	if [[ "$new_cmdline" != "$cur_cmdline" ]]; then
+		diff -u --label "$KERNEL_CMDLINE (now)" --label "$KERNEL_CMDLINE (after)" <(echo "$cur_cmdline") <(echo "$new_cmdline") | sed 's/^/      /' || true
+	fi
+	if confirm "Undo the boot splash changes?"; then
+		if [[ "$new_cmdline" != "$cur_cmdline" ]]; then
+			if [[ "$new_cmdline" == *root=* ]]; then
+				f="$(mktemp)"
+				echo "$new_cmdline" >"$f"
+				run sudo install -m 644 "$f" "$KERNEL_CMDLINE" && ok "$KERNEL_CMDLINE: removed ${added_words% }" || warn "writing $KERNEL_CMDLINE failed"
+				rm -f "$f"
+			else
+				warn "the restored command line would have no root=; left $KERNEL_CMDLINE alone"
+			fi
+		fi
+		while IFS=$'\t' read -r path saved; do
+			[[ -n "$path" && -f "$saved" ]] || continue
+			if [[ -f "$path" ]] && grep -qE "^Theme=($(IFS='|'; echo "${PLYMOUTH_THEMES[*]}"))$" "$path"; then
+				run sudo install -m 644 "$saved" "$path" && ok "$path restored"
+			elif [[ -f "$path" ]]; then
+				warn "$path was changed since install; left alone (original: $saved)"
+			fi
+		done <<<"$boot_saved"
+		while read -r path; do
+			[[ -n "$path" && -f "$path" ]] || continue
+			if [[ "$path" == "$DRACUT_PLYMOUTH_CONF" ]] && ! grep -q 'Night City' "$path"; then
+				warn "$path doesn't look like the theme's; left alone"
+				continue
+			fi
+			run sudo rm -f "$path" && ok "removed $path"
+		done <<<"$boot_created"
+		while read -r path; do
+			[[ -n "$path" && -d "$path" ]] || continue
+			case "$path" in
+			"$PLYMOUTH_THEME_DIR"/cybernetic | "$PLYMOUTH_THEME_DIR"/glitch)
+				run sudo rm -rf "$path" && ok "removed $path" ;;
+			*) warn "not removing $path (unexpected path)" ;;
+			esac
+		done <<<"$boot_dirs"
+		info "rebuilding the initramfs for every kernel..."
+		run sudo reinstall-kernels && ok "initramfs rebuilt without Plymouth; reboot to check" ||
+			warn "reinstall-kernels failed; run 'sudo reinstall-kernels' yourself before rebooting"
+	else
+		warn "boot splash left in place (run uninstall.sh again to undo it)"
+	fi
+fi
+((any_optional)) || ok "none installed"
+
+# ---- 5. things the theme installed ----
 say "Installed by the theme"
 pkgs=() still=()
 while read -r p; do

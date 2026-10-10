@@ -247,7 +247,7 @@ for n in range(1, 10):
 	done
 	[[ -n "$name" && "$link" == http* ]] || return 1
 	mkdir -p "$DOWNLOAD_CACHE"
-	if curl -fsSL --connect-timeout 15 --max-time 180 -o "$DOWNLOAD_CACHE/$name.part" "$link" &&
+	if curl -fsL --connect-timeout 15 --max-time 180 -o "$DOWNLOAD_CACHE/$name.part" "$link" &&
 		md5ok "$DOWNLOAD_CACHE/$name.part"; then
 		mv "$DOWNLOAD_CACHE/$name.part" "$DOWNLOAD_CACHE/$name"
 		echo "$DOWNLOAD_CACHE/$name"

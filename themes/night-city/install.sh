@@ -9,30 +9,122 @@
 #   6. dconf: dark style, accent, GTK/icon/cursor/shell theme, title font, extension settings,
 #      enabled extensions; btop colour theme; papirus-folders yellow
 #   7. VS Code / Cursor: 2077 theme extension + workbench.colorTheme
+#   optional: Cyberpunk-Neon cursor (default), window border glow, conky HUD, Plymouth boot splash
 # Every change is logged to <backup>/state.tsv, which uninstall.sh reads.
 #
-# usage: ./install.sh [--dry-run] [--yes] [--skip-packages] [--with-orbitron] [--no-editors]
+# usage: ./install.sh [--dry-run] [--yes] [--skip-packages] [--with-orbitron] [--no-editors] [--reapply]
+#                     [--cursor neon|bibata|keep] [--icons papirus] [--borders [glow|highlight|none]]
+#                     [--with-conky] [--with-boot [--boot-theme cybernetic|glitch]]
+#        ./install.sh --refresh [--dry-run]
+#   --cursor     neon (default): Cyberpunk-Neon Cursors from pling, downloaded at install time;
+#                bibata: Bibata-Modern-Amber from the AUR; keep: leave the cursor alone
+#   --borders    glow (default when given without a value): the theme's own Night City Glow
+#                extension (animated neon border); highlight: Highlight Focus from EGO (static)
+#   --with-conky Arasaka cyberdeck HUD (conky), adapted to this machine, autostarted
+#   --with-boot  Plymouth splash (cybernetic or glitch) via dracut; edits /etc/kernel/cmdline (asks)
+#   --refresh    only re-render dist/ and reload the NightCity shell theme (no packages, no dconf)
+#   --reapply    on a re-install, also reset GNOME settings you changed after installing
+#                (by default those are left as you set them)
+# Without these flags you're asked about the border, the HUD and the boot splash (default no).
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 # shellcheck source=lib/common.sh
 source "$HERE/lib/common.sh"
+# shellcheck source=lib/optional.sh
+source "$HERE/lib/optional.sh"
 
-SKIP_PKGS=0 WITH_ORBITRON=0 DO_EDITORS=1
-for arg in "$@"; do
-	case "$arg" in
+SKIP_PKGS=0 WITH_ORBITRON=0 DO_EDITORS=1 REFRESH=0 REAPPLY=0
+CURSOR_CHOICE=neon ICONS=papirus BORDERS='' WITH_CONKY='' WITH_BOOT='' BOOT_THEME="${PLYMOUTH_THEMES[0]}"
+while (($#)); do
+	case "$1" in
 	-n | --dry-run) DRY_RUN=1 ;;
 	-y | --yes) YES=1 ;;
 	--skip-packages) SKIP_PKGS=1 ;;
 	--with-orbitron) WITH_ORBITRON=1 ;;
 	--no-editors) DO_EDITORS=0 ;;
-	-h | --help) sed -n '2,15p' "$0"; exit 0 ;;
-	*) die "unknown option: $arg" ;;
+	--cursor) CURSOR_CHOICE="${2:-}"; shift ;;
+	--cursor=*) CURSOR_CHOICE="${1#*=}" ;;
+	--icons) ICONS="${2:-}"; shift ;;
+	--icons=*) ICONS="${1#*=}" ;;
+	--borders)
+		if [[ "${2:-}" =~ ^(glow|highlight|none)$ ]]; then BORDERS="$2"; shift; else BORDERS=glow; fi ;;
+	--borders=*) BORDERS="${1#*=}" ;;
+	--with-conky) WITH_CONKY=1 ;;
+	--with-boot) WITH_BOOT=1 ;;
+	--boot-theme) BOOT_THEME="${2:-}"; shift ;;
+	--boot-theme=*) BOOT_THEME="${1#*=}" ;;
+	--refresh) REFRESH=1 ;;
+	--reapply) REAPPLY=1 ;;
+	-h | --help) sed -n '2,32p' "$0"; exit 0 ;;
+	*) die "unknown option: $1" ;;
 	esac
+	shift
 done
+[[ "$CURSOR_CHOICE" =~ ^(neon|bibata|keep)$ ]] || die "--cursor must be neon, bibata or keep"
+[[ -z "$BORDERS" || "$BORDERS" =~ ^(glow|highlight|none)$ ]] || die "--borders must be glow, highlight or none"
+[[ " ${PLYMOUTH_THEMES[*]} " == *" $BOOT_THEME "* ]] || die "--boot-theme must be one of: ${PLYMOUTH_THEMES[*]}"
+case "$ICONS" in
+papirus) ;;
+daemon)
+	die "--icons daemon: pling 2213960 ('Daemon-2.0 Icon Theme') only ships daemon-2.0.zip, which is a Kvantum
+       (Qt widget) theme (daemon-2.0.kvconfig + .svg), not an icon theme, so there's nothing to install
+       as icons. Papirus-Dark with yellow folders stays the icon theme." ;;
+*) die "--icons must be papirus" ;;
+esac
 
-banner "install"
+banner "$( ((REFRESH)) && echo refresh || echo install)"
 ((DRY_RUN)) && info "${C_CYAN}dry run: nothing will be changed${C_RESET}"
+
+# ---- --refresh: re-render and reload, nothing else ----
+if ((REFRESH)); then
+	say "Rendering dist/ from palette.sh"
+	if ((DRY_RUN)); then
+		"$NC_DIR/generate.sh" --check | sed 's/^/  /' || info "a real run would regenerate dist/"
+	else
+		"$NC_DIR/generate.sh" | sed 's/^/  /'
+	fi
+	say "Deployed files"
+	for entry in "${NC_FILES[@]}"; do
+		IFS='|' read -r target source mode <<<"$entry"
+		short="${target/#$HOME/\~}"
+		if is_ours "$target" "$source" "$mode"; then
+			ok "$short"
+		elif [[ "$mode" == copy && -f "$target" ]]; then
+			info "$short is a copy that differs from dist/ (edited by its app?); left alone"
+		else
+			warn "$short isn't the theme's (not installed, or changed); run install.sh to deploy it"
+		fi
+	done
+	glow_link="$HOME/.local/share/gnome-shell/extensions/$GLOW_UUID"
+	[[ -L "$glow_link" ]] && ok "${glow_link/#$HOME/\~} (schema recompiled by generate.sh; the extension rereads settings live)"
+	say "GNOME Shell theme"
+	name="$(dconf read /org/gnome/shell/extensions/user-theme/name)"
+	if [[ "$name" == "'NightCity'" ]]; then
+		# user-theme reloads the stylesheet when the name changes; flip it off and back on.
+		run dconf write /org/gnome/shell/extensions/user-theme/name "''"
+		((DRY_RUN)) || sleep 1
+		run dconf write /org/gnome/shell/extensions/user-theme/name "'NightCity'"
+		ok "NightCity shell theme reloaded"
+	else
+		info "user-theme name is ${name:-unset}, not 'NightCity'; nothing to reload"
+	fi
+	info "GTK apps pick up the new gtk.css when they're restarted."
+	exit 0
+fi
+
+# ---- optional parts: ask (default no) unless chosen on the command line ----
+if [[ -z "$BORDERS" ]]; then
+	if optin "Add the animated neon border around the focused window (Night City Glow extension)?" "--borders glow"; then BORDERS=glow; else BORDERS=none; fi
+fi
+if [[ -z "$WITH_CONKY" ]]; then
+	if optin "Add the conky HUD (Arasaka cyberdeck, starts at login)?" "--with-conky"; then WITH_CONKY=1; else WITH_CONKY=0; fi
+fi
+if [[ -z "$WITH_BOOT" ]]; then
+	if optin "Add a Plymouth boot splash (needs sudo, edits the kernel command line, reboot to see it)?" "--with-boot"; then WITH_BOOT=1; else WITH_BOOT=0; fi
+fi
+EXTRA_EXTENSIONS=() NEEDS_RELOGIN=0
+CURSOR_NAME=''
 
 # ---- 0. preflight + render ----
 for cmd in dconf python3 pacman curl; do command -v "$cmd" >/dev/null || die "$cmd not found"; done
@@ -73,10 +165,14 @@ say "Packages"
 if ((SKIP_PKGS)); then
 	info "skipped (--skip-packages)"
 else
+	repo=("${REPO_PKGS[@]}")
+	((WITH_CONKY)) && repo+=("${CONKY_PKGS[@]}")
+	((WITH_BOOT)) && repo+=("${BOOT_PKGS[@]}")
 	aur=("${AUR_PKGS[@]}")
 	((WITH_ORBITRON)) && aur+=("${OPTIONAL_AUR_PKGS[@]}")
+	[[ "$CURSOR_CHOICE" == bibata ]] && aur+=("$BIBATA_PKG")
 	missing_repo=() missing_aur=()
-	for p in "${REPO_PKGS[@]}"; do pkg_present "$p" || missing_repo+=("$p"); done
+	for p in "${repo[@]}"; do pkg_present "$p" || missing_repo+=("$p"); done
 	for p in "${aur[@]}"; do pkg_present "$p" || missing_aur+=("$p"); done
 	noconfirm=()
 	((YES)) && noconfirm=(--noconfirm)
@@ -89,7 +185,7 @@ else
 			warn "skipped; the matching parts of the theme won't show until they're installed"
 		fi
 	else
-		ok "official repo packages already installed: ${REPO_PKGS[*]}"
+		ok "official repo packages already installed: ${repo[*]}"
 	fi
 
 	if ((${#missing_aur[@]})); then
@@ -112,7 +208,17 @@ fi
 
 # ---- 3. extensions from extensions.gnome.org ----
 say "Extensions from extensions.gnome.org"
-for uuid in "${EGO_EXTENSIONS[@]}"; do
+ego=("${EGO_EXTENSIONS[@]}")
+if [[ "$BORDERS" == highlight ]]; then
+	if [[ -n "$SHELL_VER" ]] && ego_supports "$HIGHLIGHT_UUID" "$SHELL_VER"; then
+		ego+=("$HIGHLIGHT_UUID")
+	else
+		warn "Highlight Focus has no build for GNOME ${SHELL_VER:-?} on extensions.gnome.org (newest declares 49;"
+		warn "upstream main declares 50), so GNOME would refuse to load it. Use --borders glow instead."
+		BORDERS=none
+	fi
+fi
+for uuid in "${ego[@]}"; do
 	if loc="$(ext_dir "$uuid")"; then
 		ok "$uuid already installed ($loc)"
 		continue
@@ -127,7 +233,7 @@ for uuid in "${EGO_EXTENSIONS[@]}"; do
 		url="$(python3 -c 'import json,sys; print(json.load(sys.stdin)["download_url"])' <<<"$info_json")" &&
 		curl -fsSL --max-time 120 -o "$tmp/ext.zip" "https://extensions.gnome.org$url" &&
 		gnome-extensions install --force "$tmp/ext.zip"; then
-		record ego "$uuid"
+		if [[ "$uuid" == "$HIGHLIGHT_UUID" ]]; then record ego_border "$uuid"; else record ego "$uuid"; fi
 		ok "$uuid installed for GNOME $SHELL_VER"
 	else
 		warn "couldn't install $uuid (no build for GNOME $SHELL_VER, or extensions.gnome.org unreachable)"
@@ -167,6 +273,10 @@ else
 	fi
 	rm -rf "$tmp"
 fi
+
+# ---- cursor and window borders (before dconf, which needs their names) ----
+install_cursor
+install_borders
 
 # ---- 5. configs ----
 say "Configs"
@@ -220,14 +330,43 @@ fi
 
 # ---- 6. GNOME settings ----
 say "GNOME settings (dconf)"
+# Keys an earlier install already set: if they differ now, you changed them; keep that.
+declare -A EARLIER
+if [[ -f "$ACTIVE_MARKER" ]]; then
+	for d in "$BACKUP_ROOT"/2*; do
+		[[ -f "$d/state.tsv" && "$d" != "$BACKUP_DIR" ]] || continue
+		[[ "$(basename "$d")" < "$(cat "$ACTIVE_MARKER")" ]] && continue
+		while IFS=$'\t' read -r kind key _; do
+			[[ "$kind" == dconf ]] && EARLIER["$key"]=1
+		done <"$d/state.tsv"
+	done
+fi
 while read -r key value; do
+	if [[ "$value" == *@CURSOR@* && -z "$CURSOR_NAME" ]]; then
+		info "${key#/org/gnome/} left as $(dconf read "$key")"
+		continue
+	fi
+	is_cursor=0
+	[[ "$value" == *@CURSOR@* ]] && is_cursor=1
+	value="$(theme_value "$value")"
 	cur="$(dconf read "$key")"
 	if same_value "$cur" "$value"; then
 		ok "${key#/org/gnome/} = $value (already)"
 		continue
 	fi
+	if ((!REAPPLY)) && [[ -n "${EARLIER[$key]:-}" ]]; then
+		# A cursor switch between the theme's own cursors isn't a change of yours.
+		theirs=1
+		if ((is_cursor)); then
+			for c in "${CURSOR_NAMES[@]}"; do [[ "$cur" == "'$c'" ]] && theirs=0; done
+		fi
+		if ((theirs)); then
+			info "${key#/org/gnome/} is ${cur:-unset} (changed after install); kept. --reapply resets it to $value"
+			continue
+		fi
+	fi
 	run dconf write "$key" "$value"
-	record dconf "$key"
+	record dconf "$key" "$value"
 	ok "${key#/org/gnome/} = $value${cur:+  (was $cur)}"
 done < <(dconf_keys)
 
@@ -235,7 +374,7 @@ en="$(dconf read /org/gnome/shell/enabled-extensions)"
 dis="$(dconf read /org/gnome/shell/disabled-extensions)"
 en="${en:-@as []}" dis="${dis:-@as []}"
 new_en="$en" new_dis="$dis"
-for uuid in "${NC_EXTENSIONS[@]}"; do
+for uuid in "${NC_EXTENSIONS[@]}" "${EXTRA_EXTENSIONS[@]}"; do
 	if ! ncjson gv-has "$new_en" "$uuid"; then
 		new_en="$(ncjson gv-add "$new_en" "$uuid")"
 		record ext_enabled "$uuid"
@@ -303,6 +442,10 @@ else
 	done
 fi
 
+# ---- optional: conky HUD and boot splash ----
+((WITH_CONKY)) && install_conky
+((WITH_BOOT)) && install_boot
+
 # ---- done ----
 say "Done"
 if ((DRY_RUN)); then
@@ -320,3 +463,10 @@ cat <<MSG
   - Wallpaper isn't part of the theme. Wallhaven is filtered on this network, so use a VPN/proxy.
   - Undo everything: $HERE/uninstall.sh
 MSG
+if ((NEEDS_RELOGIN)); then
+	warn "Night City Glow was just added. GNOME on Wayland only discovers new extensions at login:"
+	warn "log out and back in, then it's enabled automatically. Tweak it with e.g."
+	warn "  gsettings --schemadir $GLOW_SRC/schemas set org.gnome.shell.extensions.night-city-glow mode rainbow"
+fi
+((WITH_BOOT)) && info "  - Boot splash: reboot to see it. Undo with uninstall.sh (asks before touching /etc)."
+true
