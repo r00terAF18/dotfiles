@@ -115,7 +115,7 @@ fi
 
 # ---- optional parts: ask (default no) unless chosen on the command line ----
 if [[ -z "$BORDERS" ]]; then
-	if optin "Add the animated neon border around the focused window (Night City Glow extension)?" "--borders glow"; then BORDERS=glow; else BORDERS=none; fi
+	if optin "Add a steady neon border around the focused window (glow and animation are off by default)?" "--borders glow"; then BORDERS=glow; else BORDERS=none; fi
 fi
 if [[ -z "$WITH_CONKY" ]]; then
 	if optin "Add the conky HUD (Arasaka cyberdeck, starts at login)?" "--with-conky"; then WITH_CONKY=1; else WITH_CONKY=0; fi

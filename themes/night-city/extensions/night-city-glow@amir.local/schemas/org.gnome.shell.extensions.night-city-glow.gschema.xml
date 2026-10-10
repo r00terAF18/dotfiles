@@ -8,9 +8,9 @@
   </enum>
   <schema id="org.gnome.shell.extensions.night-city-glow" path="/org/gnome/shell/extensions/night-city-glow/">
     <key name="mode" enum="org.gnome.shell.extensions.night-city-glow.Mode">
-      <default>'palette'</default>
-      <summary>Animation</summary>
-      <description>palette: fade through the colours; rainbow: rotate the hue; pulse: first colour, glow breathes; static: first colour, no timer at all.</description>
+      <default>'static'</default>
+      <summary>Border colour mode</summary>
+      <description>Defaults to a steady border with no animation. palette fades through the colours; rainbow rotates the hue; pulse makes the border breathe.</description>
     </key>
     <key name="cycle-seconds" type="d">
       <range min="0.5" max="120"/>
@@ -38,9 +38,9 @@
     </key>
     <key name="glow-size" type="i">
       <range min="0" max="40"/>
-      <default>14</default>
+      <default>0</default>
       <summary>Glow radius (px)</summary>
-      <description>Blur radius of the soft glow around the border. 0 turns the glow off.</description>
+      <description>Blur radius of the soft glow around the border. Defaults to 0 (off).</description>
     </key>
     <key name="show-on-maximized" type="b">
       <default>false</default>
