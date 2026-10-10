@@ -1,0 +1,59 @@
+# Night City (Cyberpunk 2077) theme for btop.
+# Generated from themes/night-city/palette.sh by generate.sh; edit the template, not dist/.
+# Linked to ~/.config/btop/themes/night-city.theme; install.sh sets color_theme = "night-city".
+
+# Main background (empty = terminal default background)
+theme[main_bg]="{{bg0}}"
+theme[main_fg]="{{fg}}"
+theme[title]="{{yellow}}"
+theme[hi_fg]="{{red}}"
+theme[selected_bg]="{{yellow}}"
+theme[selected_fg]="{{bg0}}"
+theme[inactive_fg]="{{bright_black}}"
+theme[graph_text]="{{fg_dim}}"
+theme[meter_bg]="{{bg2}}"
+theme[proc_misc]="{{cyan}}"
+
+# Box outlines
+theme[cpu_box]="{{yellow}}"
+theme[mem_box]="{{cyan}}"
+theme[net_box]="{{magenta}}"
+theme[proc_box]="{{red}}"
+theme[div_line]="{{border}}"
+
+# Gradients: start / mid / end
+theme[temp_start]="{{cyan}}"
+theme[temp_mid]="{{yellow}}"
+theme[temp_end]="{{red}}"
+
+theme[cpu_start]="{{cyan}}"
+theme[cpu_mid]="{{yellow}}"
+theme[cpu_end]="{{red}}"
+
+theme[free_start]="{{bg2}}"
+theme[free_mid]="{{cyan_dim}}"
+theme[free_end]="{{cyan}}"
+
+theme[cached_start]="{{bg2}}"
+theme[cached_mid]="{{blue}}"
+theme[cached_end]="{{bright_blue}}"
+
+theme[available_start]="{{bg2}}"
+theme[available_mid]="{{green}}"
+theme[available_end]="{{bright_green}}"
+
+theme[used_start]="{{yellow_dim}}"
+theme[used_mid]="{{yellow}}"
+theme[used_end]="{{red}}"
+
+theme[download_start]="{{bg2}}"
+theme[download_mid]="{{cyan_dim}}"
+theme[download_end]="{{cyan}}"
+
+theme[upload_start]="{{bg2}}"
+theme[upload_mid]="{{magenta}}"
+theme[upload_end]="{{bright_magenta}}"
+
+theme[process_start]="{{cyan}}"
+theme[process_mid]="{{yellow}}"
+theme[process_end]="{{red}}"

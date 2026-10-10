@@ -1,0 +1,29 @@
+## Night City (Cyberpunk 2077) config for cava.
+## Generated from themes/night-city/palette.sh by generate.sh; edit the template, not dist/.
+## Linked to ~/.config/cava/config by install.sh. Everything not set here uses cava's defaults.
+
+[general]
+framerate = 60
+bar_width = 2
+bar_spacing = 1
+
+[input]
+; cava picks PipeWire/Pulse automatically
+
+[output]
+method = noncurses
+
+[color]
+; transparent background, so kitty's Night City background shows through
+background = default
+foreground = '{{yellow}}'
+
+; vertical gradient, bottom to top: cyan -> magenta -> red -> yellow
+gradient = 1
+gradient_color_1 = '{{cyan}}'
+gradient_color_2 = '{{magenta}}'
+gradient_color_3 = '{{red}}'
+gradient_color_4 = '{{yellow}}'
+
+[smoothing]
+noise_reduction = 77

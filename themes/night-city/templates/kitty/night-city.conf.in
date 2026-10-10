@@ -1,0 +1,85 @@
+# Night City (Cyberpunk 2077) for kitty.
+# Generated from themes/night-city/palette.sh by generate.sh; edit the template, not dist/.
+#
+# install.sh links this file as BOTH:
+#   ~/.config/kitty/current-theme.conf   (pulled in by `globinclude current-theme.conf` in kitty.conf)
+#   ~/.config/kitty/dark-theme.auto.conf (kitty's dark-mode auto theme; it only reads the colours
+#                                         from it, so the non-colour settings below come from
+#                                         current-theme.conf)
+# Reload a running kitty with ctrl+shift+f5.
+
+## name: Night City
+## blurb: Neon yellow, cyan and red on void black, after Cyberpunk 2077
+
+#: Basic colours
+foreground              {{fg}}
+background              {{bg0}}
+selection_foreground    {{bg0}}
+selection_background    {{yellow}}
+
+#: Cursor
+cursor                  {{yellow}}
+cursor_text_color       {{bg0}}
+cursor_trail_color      {{cyan}}
+
+#: URLs
+url_color               {{cyan}}
+
+#: Window borders and bell
+active_border_color     {{yellow}}
+inactive_border_color   {{border}}
+bell_border_color       {{red}}
+visual_bell_color       none
+
+#: Tab bar
+tab_bar_background      {{bg0}}
+tab_bar_margin_color    {{bg0}}
+active_tab_foreground   {{bg0}}
+active_tab_background   {{yellow}}
+inactive_tab_foreground {{cyan}}
+inactive_tab_background {{bg2}}
+
+#: Marks
+mark1_foreground {{bg0}}
+mark1_background {{yellow}}
+mark2_foreground {{bg0}}
+mark2_background {{cyan}}
+mark3_foreground {{bg0}}
+mark3_background {{magenta}}
+
+#: The 16 terminal colours
+# black
+color0  {{bg2}}
+color8  {{bright_black}}
+# red
+color1  {{red}}
+color9  {{bright_red}}
+# green
+color2  {{green}}
+color10 {{bright_green}}
+# yellow
+color3  {{yellow}}
+color11 {{bright_yellow}}
+# blue
+color4  {{blue}}
+color12 {{bright_blue}}
+# magenta
+color5  {{magenta}}
+color13 {{bright_magenta}}
+# cyan
+color6  {{cyan}}
+color14 {{bright_cyan}}
+# white
+color7  {{fg}}
+color15 {{bright_white}}
+
+#: Style (used via current-theme.conf; ignored in dark-theme.auto.conf)
+cursor_shape                 beam
+cursor_trail                 3
+cursor_trail_decay           0.1 0.4
+cursor_trail_start_threshold 2
+cursor_blink_interval        0.5 ease-in-out
+tab_bar_style                powerline
+tab_powerline_style          round
+active_tab_font_style        bold
+inactive_tab_font_style      normal

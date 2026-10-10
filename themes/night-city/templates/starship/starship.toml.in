@@ -1,0 +1,144 @@
+# Night City (Cyberpunk 2077) prompt for starship.
+# Generated from themes/night-city/palette.sh by generate.sh; edit the template, not dist/.
+# Used through STARSHIP_CONFIG (set by ~/.config/environment.d/60-night-city.conf and
+# ~/.config/fish/conf.d/night-city.fish), so the dotfiles' own starship.toml stays untouched.
+# Needs a Nerd Font (JetBrainsMono Nerd Font is fine).
+
+"$schema" = 'https://starship.rs/config-schema.json'
+
+palette = "night_city"
+add_newline = true
+
+format = """
+[](yellow)\
+[ 󰣇 ](bg:yellow fg:bg0)\
+$username\
+[](fg:yellow bg:cyan)\
+$directory\
+[](fg:cyan bg:bg2)\
+$git_branch\
+$git_status\
+[](fg:bg2 bg:bg1)\
+$c\
+$rust\
+$golang\
+$nodejs\
+$python\
+$dotnet\
+$java\
+$docker_context\
+[](fg:bg1)\
+$line_break\
+$character"""
+
+right_format = """$cmd_duration$status$time"""
+
+[palettes.night_city]
+bg0 = "{{bg0}}"
+bg1 = "{{bg1}}"
+bg2 = "{{bg2}}"
+fg = "{{fg}}"
+dim = "{{fg_dim}}"
+yellow = "{{yellow}}"
+cyan = "{{cyan}}"
+red = "{{red}}"
+magenta = "{{magenta}}"
+green = "{{green}}"
+orange = "{{orange}}"
+blue = "{{blue}}"
+
+[username]
+show_always = true
+style_user = "bg:yellow fg:bg0 bold"
+style_root = "bg:yellow fg:red bold"
+format = "[$user ]($style)"
+
+[directory]
+style = "bg:cyan fg:bg0 bold"
+format = "[ $path ]($style)[$read_only]($read_only_style)"
+read_only = "󰌾 "
+read_only_style = "bg:cyan fg:red"
+truncation_length = 3
+truncation_symbol = "…/"
+
+[directory.substitutions]
+"Documents" = "󰈙 "
+"Downloads" = " "
+"Music" = "󰝚 "
+"Pictures" = " "
+"Projects" = "󰲋 "
+
+[git_branch]
+symbol = ""
+style = "bg:bg2"
+format = "[[ $symbol $branch ](fg:magenta bg:bg2)]($style)"
+
+[git_status]
+style = "bg:bg2"
+format = "[[($all_status$ahead_behind )](fg:magenta bg:bg2)]($style)"
+
+[c]
+symbol = ""
+style = "bg:bg1"
+format = "[[ $symbol( $version) ](fg:green bg:bg1)]($style)"
+
+[rust]
+symbol = ""
+style = "bg:bg1"
+format = "[[ $symbol( $version) ](fg:green bg:bg1)]($style)"
+
+[golang]
+symbol = ""
+style = "bg:bg1"
+format = "[[ $symbol( $version) ](fg:green bg:bg1)]($style)"
+
+[nodejs]
+symbol = ""
+style = "bg:bg1"
+format = "[[ $symbol( $version) ](fg:green bg:bg1)]($style)"
+
+[python]
+symbol = ""
+style = "bg:bg1"
+format = "[[ $symbol( $version)( \\($virtualenv\\)) ](fg:green bg:bg1)]($style)"
+
+[dotnet]
+symbol = "󰪮"
+style = "bg:bg1"
+format = "[[ $symbol( $version)( 🎯 $tfm) ](fg:green bg:bg1)]($style)"
+
+[java]
+symbol = ""
+style = "bg:bg1"
+format = "[[ $symbol( $version) ](fg:green bg:bg1)]($style)"
+
+[docker_context]
+symbol = ""
+style = "bg:bg1"
+format = "[[ $symbol( $context) ](fg:cyan bg:bg1)]($style)"
+
+[cmd_duration]
+min_time = 2000
+format = "[ $duration]($style) "
+style = "fg:orange"
+
+[status]
+disabled = false
+symbol = "✘ "
+format = "[$symbol$status]($style) "
+style = "fg:red bold"
+
+[time]
+disabled = false
+time_format = "%H:%M"
+format = "[ $time]($style)"
+style = "fg:dim"
+
+[line_break]
+disabled = false
+
+[character]
+success_symbol = "[❯](bold yellow)"
+error_symbol = "[❯](bold red)"
+vimcmd_symbol = "[❮](bold cyan)"
+

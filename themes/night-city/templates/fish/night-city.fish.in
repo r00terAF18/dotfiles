@@ -1,0 +1,44 @@
+# Night City (Cyberpunk 2077) colours for fish, plus the starship prompt switch.
+# Generated from themes/night-city/palette.sh by generate.sh; edit the template, not dist/.
+# Linked to ~/.config/fish/conf.d/night-city.fish by install.sh. Everything is set in
+# global scope, so removing this file restores your own (universal) fish colours.
+
+status is-interactive; or return
+
+# Use the Night City starship prompt (also set for the whole session via environment.d).
+if test -r $HOME/.config/night-city/starship/starship.toml
+    set -gx STARSHIP_CONFIG $HOME/.config/night-city/starship/starship.toml
+end
+
+# Syntax highlighting
+set -g fish_color_normal {{fg_hex}}
+set -g fish_color_command {{cyan_hex}}
+set -g fish_color_keyword {{magenta_hex}}
+set -g fish_color_quote {{yellow_hex}}
+set -g fish_color_redirection {{orange_hex}}
+set -g fish_color_end {{orange_hex}}
+set -g fish_color_error {{red_hex}}
+set -g fish_color_param {{fg_hex}}
+set -g fish_color_option {{cyan_dim_hex}}
+set -g fish_color_comment {{fg_dim_hex}}
+set -g fish_color_operator {{green_hex}}
+set -g fish_color_escape {{magenta_hex}}
+set -g fish_color_autosuggestion {{bright_black_hex}}
+set -g fish_color_valid_path --underline
+set -g fish_color_selection --background={{bg2_hex}}
+set -g fish_color_search_match --background={{border_hex}}
+set -g fish_color_history_current --bold
+set -g fish_color_cancel {{red_hex}} --reverse
+set -g fish_color_cwd {{yellow_hex}}
+set -g fish_color_cwd_root {{red_hex}}
+set -g fish_color_user {{cyan_hex}}
+set -g fish_color_host {{fg_hex}}
+set -g fish_color_host_remote {{orange_hex}}
+set -g fish_color_status {{red_hex}}
+
+# Completion pager
+set -g fish_pager_color_progress {{bg0_hex}} --background={{yellow_hex}}
+set -g fish_pager_color_prefix {{yellow_hex}} --bold
+set -g fish_pager_color_completion {{fg_hex}}
+set -g fish_pager_color_description {{fg_dim_hex}}
+set -g fish_pager_color_selected_background --background={{bg2_hex}}
