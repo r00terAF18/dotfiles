@@ -120,9 +120,17 @@
 
 /* ---- Neon details (kept small so app layouts don't break) ---- */
 
-/* Window titles in Rajdhani, the font of the game's HUD (falls back if it isn't installed) */
+/* Window titles and headings in Rajdhani, the font of the game's HUD (falls back if it isn't
+ * installed). Body text keeps the normal interface font. */
 headerbar .title,
-windowtitle .title {
+windowtitle .title,
+.title-1,
+.title-2,
+.title-3,
+.title-4,
+.heading,
+preferencesgroup > box > box > .heading,
+statuspage > scrolledwindow > viewport > box > clamp > box > .title {
   font-family: "Rajdhani", sans-serif;
   font-weight: 700;
   letter-spacing: 1px;

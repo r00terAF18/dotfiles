@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Render templates/ into dist/ using the colours in palette.sh.
 #   {{name}} -> #RRGGBB   {{name_hex}} -> RRGGBB   {{name_rgb}} -> R, G, B
+# Also renders extensions/*/**.in next to the template (e.g. palette.js) and compiles the
+# extensions' GSettings schemas.
 #
 # usage: ./generate.sh [--check]   (--check: only report whether dist/ is up to date)
 set -euo pipefail
@@ -51,7 +53,28 @@ while IFS= read -r -d '' tpl; do
 	fi
 done < <(find "$HERE/templates" -type f -print0 | sort -z)
 
+# Extensions: *.in -> same path without .in, inside extensions/
+ext_out="$work/extensions"
+while IFS= read -r -d '' tpl; do
+	rel="${tpl#"$HERE/extensions/"}"
+	rel="${rel%.in}"
+	mkdir -p "$(dirname "$ext_out/$rel")"
+	sed -f "$sedscript" "$tpl" >"$ext_out/$rel"
+	if left="$(grep -o '{{[a-z0-9_]*}}' "$ext_out/$rel" | sort -u | tr '\n' ' ')" && [[ -n "$left" ]]; then
+		echo "extensions/${tpl#"$HERE/extensions/"}: unknown palette names: $left" >&2
+		exit 1
+	fi
+done < <(find "$HERE/extensions" -type f -name '*.in' -print0 2>/dev/null | sort -z)
+
 if ((CHECK)); then
+	stale=0
+	while IFS= read -r -d '' f; do
+		cmp -s "$f" "$HERE/extensions/${f#"$ext_out/"}" || stale=1
+	done < <(find "$ext_out" -type f -print0)
+	if ((stale)); then
+		echo "extensions/: rendered files are out of date; run ./generate.sh" >&2
+		exit 1
+	fi
 	if diff -r "$out" "$HERE/dist" >/dev/null 2>&1; then
 		echo "dist/ is up to date with palette.sh"
 	else
@@ -79,3 +102,19 @@ if [[ -d "$HERE/dist" ]]; then
 	done < <(find "$HERE/dist" -type f -print0)
 fi
 echo "dist/: $(find "$out" -type f | wc -l) files, $changed changed"
+
+while IFS= read -r -d '' f; do
+	rel="${f#"$ext_out/"}"
+	if ! cmp -s "$f" "$HERE/extensions/$rel"; then
+		cp "$f" "$HERE/extensions/$rel"
+		echo "  updated extensions/$rel"
+	fi
+done < <(find "$ext_out" -type f -print0 2>/dev/null)
+for sch in "$HERE"/extensions/*/schemas; do
+	[[ -d "$sch" ]] || continue
+	if command -v glib-compile-schemas >/dev/null; then
+		glib-compile-schemas --strict "$sch" || { echo "glib-compile-schemas failed in ${sch#"$HERE/"}" >&2; exit 1; }
+	else
+		echo "  glib-compile-schemas not found; ${sch#"$HERE/"} not compiled" >&2
+	fi
+done

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <enum id="org.gnome.shell.extensions.night-city-glow.Mode">
+    <value nick="palette" value="0"/>
+    <value nick="rainbow" value="1"/>
+    <value nick="pulse" value="2"/>
+    <value nick="static" value="3"/>
+  </enum>
+  <schema id="org.gnome.shell.extensions.night-city-glow" path="/org/gnome/shell/extensions/night-city-glow/">
+    <key name="mode" enum="org.gnome.shell.extensions.night-city-glow.Mode">
+      <default>'palette'</default>
+      <summary>Animation</summary>
+      <description>palette: fade through the colours; rainbow: rotate the hue; pulse: first colour, glow breathes; static: first colour, no timer at all.</description>
+    </key>
+    <key name="cycle-seconds" type="d">
+      <range min="0.5" max="120"/>
+      <default>8.0</default>
+      <summary>Seconds per full cycle</summary>
+      <description>How long one full colour cycle (or one breath in pulse mode) takes.</description>
+    </key>
+    <key name="fps" type="i">
+      <range min="5" max="60"/>
+      <default>30</default>
+      <summary>Colour updates per second</summary>
+      <description>Only the colour changes per tick; the border geometry follows window signals.</description>
+    </key>
+    <key name="border-width" type="i">
+      <range min="1" max="12"/>
+      <default>2</default>
+      <summary>Border width (px)</summary>
+      <description>Width of the neon line, drawn just outside the window frame.</description>
+    </key>
+    <key name="border-radius" type="i">
+      <range min="0" max="40"/>
+      <default>14</default>
+      <summary>Corner radius (px)</summary>
+      <description>Match this to your windows' rounded corners (libadwaita windows are about 12-15 px).</description>
+    </key>
+    <key name="glow-size" type="i">
+      <range min="0" max="40"/>
+      <default>14</default>
+      <summary>Glow radius (px)</summary>
+      <description>Blur radius of the soft glow around the border. 0 turns the glow off.</description>
+    </key>
+    <key name="show-on-maximized" type="b">
+      <default>false</default>
+      <summary>Also draw on maximized windows</summary>
+      <description>Fullscreen windows never get a border.</description>
+    </key>
+    <key name="colors" type="as">
+      <default>[]</default>
+      <summary>Custom colours</summary>
+      <description>List of #RRGGBB colours for the palette mode (the first one is used by static and pulse). Empty uses the Night City palette.</description>
+    </key>
+  </schema>
+</schemalist>

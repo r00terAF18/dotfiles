@@ -1,2 +1,3 @@
 __pycache__/
 *.night-city.tmp
+extensions/*/schemas/gschemas.compiled

@@ -1,0 +1,9 @@
+{
+  "uuid": "night-city-glow@amir.local",
+  "name": "Night City Glow",
+  "description": "Neon border and soft glow around the focused window, with an animated colour cycle (palette, rainbow or pulse). Part of the Night City theme in Amir's dotfiles.",
+  "shell-version": ["51"],
+  "settings-schema": "org.gnome.shell.extensions.night-city-glow",
+  "version": 1,
+  "url": "https://github.com/r00terAF18/dotfiles/tree/main/themes/night-city/extensions/night-city-glow@amir.local"
+}

@@ -32,11 +32,53 @@ NC_FILES=(
 REPO_PKGS=(adw-gtk-theme papirus-icon-theme btop cava fastfetch)
 AUR_PKGS=(
 	papirus-folders
-	bibata-cursor-theme-bin # prebuilt; ships Bibata-Modern-Amber (yellow)
 	gnome-shell-extension-blur-my-shell
 	gnome-shell-extension-just-perfection-desktop
 )
 OPTIONAL_AUR_PKGS=(ttf-orbitron) # only with --with-orbitron
+BIBATA_PKG=bibata-cursor-theme-bin # only with --cursor bibata (prebuilt; ships Bibata-Modern-Amber)
+CONKY_PKGS=(conky lm_sensors upower) # --with-conky; Arch's conky is built with Lua 5.4, cairo, X11 and Wayland
+BOOT_PKGS=(plymouth)                 # --with-boot
+
+# ---- downloads from pling/opendesktop (licence not stated or not ours to vendor: fetched at install time) ----
+OCS_API="https://api.opendesktop.org/ocs/v1/content/data"
+# Archives that can't be downloaded (the CDN is filtered on some networks) are picked up from here:
+DOWNLOAD_CACHE="$HOME/.cache/night-city/downloads"
+DOWNLOAD_DIRS=("$DOWNLOAD_CACHE" "$HOME/Downloads")
+
+# ---- cursor (--cursor neon|bibata|keep) ----
+ICONS_DIR="$HOME/.local/share/icons"
+NEON_CURSOR_ID=2372076                    # "Cyberpunk-Neon Cursors" on pling
+NEON_CURSOR_ARCHIVE='^Cyberpunk-Neon-.*\.tar\.gz$'
+NEON_CURSOR_NAME="Cyberpunk-Neon"         # Name= in the shipped index.theme
+BIBATA_CURSOR_NAME="Bibata-Modern-Amber"
+CURSOR_NAMES=("$NEON_CURSOR_NAME" "$BIBATA_CURSOR_NAME") # any of these counts as "the theme's cursor"
+
+# ---- conky HUD (--with-conky) ----
+CONKY_ID=2349631                          # "cyberpunk-conky" (Arasaka cyberdeck HUD, MIT) on pling
+CONKY_ARCHIVE='^cyberpunk-conky-.*\.zip$'
+CONKY_DIR="$HOME/.local/share/night-city/conky"
+CONKY_AUTOSTART="$HOME/.config/autostart/night-city-conky.desktop"
+
+# ---- window borders (--borders glow|highlight|none) ----
+GLOW_UUID="night-city-glow@amir.local"
+GLOW_SRC="$NC_DIR/extensions/$GLOW_UUID"
+HIGHLIGHT_UUID="highlight-focus@pimsnel.com"
+HIGHLIGHT_KEYS=( # written only with --borders highlight
+	"/org/gnome/shell/extensions/highlight-focus/border-color '#FCEE0A'"
+	"/org/gnome/shell/extensions/highlight-focus/border-width 3"
+	"/org/gnome/shell/extensions/highlight-focus/border-radius 14"
+	"/org/gnome/shell/extensions/highlight-focus/disable-hiding true"
+)
+
+# ---- boot splash (--with-boot): systemd-boot has no theming, so this is Plymouth only ----
+PLYMOUTH_REPO="adi1090x/plymouth-themes"  # GPL-3.0
+PLYMOUTH_THEMES=(cybernetic glitch)       # both in pack_2/
+PLYMOUTH_THEME_DIR=/usr/share/plymouth/themes
+PLYMOUTHD_CONF=/etc/plymouth/plymouthd.conf
+DRACUT_PLYMOUTH_CONF=/etc/dracut.conf.d/90-night-city-plymouth.conf
+KERNEL_CMDLINE=/etc/kernel/cmdline
+CMDLINE_ADD=(quiet splash)
 
 # ---- GNOME Shell extensions ----
 NC_EXTENSIONS=(
@@ -167,6 +209,74 @@ missing_root() {
 		p="$(dirname "$p")"
 	done
 	echo "$root"
+}
+
+# Value the theme writes for a dconf key ("@CURSOR@" is the chosen cursor theme).
+theme_value() {
+	local v="$1"
+	echo "${v//@CURSOR@/\'${CURSOR_NAME:-$NEON_CURSOR_NAME}\'}"
+}
+
+# Look up a pling/opendesktop download by id and file-name regex, then find or fetch it.
+# Prints the path of a verified archive. Order: a local copy in DOWNLOAD_DIRS (md5-checked
+# when the API is reachable), then a fresh download (the API hands out short-lived signed links).
+pling_fetch() {
+	local id="$1" want="$2" json='' name='' md5='' link='' d f
+	json="$(curl -fsS --connect-timeout 15 --max-time 30 "$OCS_API/$id?format=json" 2>/dev/null)" || json=''
+	if [[ -n "$json" ]]; then
+		IFS=$'\t' read -r name md5 link < <(python3 -c '
+import json, re, sys
+d = json.loads(sys.stdin.read())["data"][0]
+for n in range(1, 10):
+    nm = d.get(f"downloadname{n}") or ""
+    if nm and re.search(sys.argv[1], nm):
+        print(nm, d.get(f"downloadmd5sum{n}") or "-", d.get(f"downloadlink{n}") or "-", sep="\t")
+        break
+' "$want" <<<"$json" 2>/dev/null) || true
+	fi
+	md5ok() { [[ -z "$md5" || "$md5" == - ]] || [[ "$(md5sum "$1" | cut -d' ' -f1)" == "$md5" ]]; }
+	for d in "${DOWNLOAD_DIRS[@]}"; do
+		[[ -d "$d" ]] || continue
+		if [[ -n "$name" ]]; then
+			[[ -f "$d/$name" ]] && md5ok "$d/$name" && { echo "$d/$name"; return 0; }
+		else
+			f="$(find "$d" -maxdepth 1 -type f -printf '%T@ %p\n' 2>/dev/null | sort -rn | cut -d' ' -f2- |
+				while read -r p; do [[ "$(basename "$p")" =~ $want ]] && { echo "$p"; break; }; done)"
+			[[ -n "$f" ]] && { echo "$f"; return 0; }
+		fi
+	done
+	[[ -n "$name" && "$link" == http* ]] || return 1
+	mkdir -p "$DOWNLOAD_CACHE"
+	if curl -fsSL --connect-timeout 15 --max-time 180 -o "$DOWNLOAD_CACHE/$name.part" "$link" &&
+		md5ok "$DOWNLOAD_CACHE/$name.part"; then
+		mv "$DOWNLOAD_CACHE/$name.part" "$DOWNLOAD_CACHE/$name"
+		echo "$DOWNLOAD_CACHE/$name"
+		return 0
+	fi
+	rm -f "$DOWNLOAD_CACHE/$name.part"
+	return 1
+}
+
+# Name of the pling file (for messages), or the regex if the API isn't reachable.
+pling_name() {
+	curl -fsS --connect-timeout 15 --max-time 30 "$OCS_API/$1?format=json" 2>/dev/null | python3 -c '
+import json, re, sys
+d = json.loads(sys.stdin.read())["data"][0]
+print(next((d[f"downloadname{n}"] for n in range(1, 10) if re.search(sys.argv[1], d.get(f"downloadname{n}") or "")), ""))
+' "$2" 2>/dev/null || true
+}
+
+# Opt-in question for optional parts: default no, and --yes / dry-run / no terminal never opt in.
+optin() {
+	if ((DRY_RUN)); then
+		printf '  %s[dry-run]%s would ask: %s [y/N] (assuming no; %s includes it)\n' "$C_DIM" "$C_RESET" "$1" "$2"
+		return 1
+	fi
+	((YES)) && return 1
+	[[ -r /dev/tty ]] || return 1
+	local ans=''
+	read -rp "  ${C_CYAN}?${C_RESET} $1 [y/N] " ans </dev/tty || true
+	[[ "${ans,,}" == y* ]]
 }
 
 shell_major() { gnome-shell --version 2>/dev/null | grep -oE '[0-9]+' | head -1; }

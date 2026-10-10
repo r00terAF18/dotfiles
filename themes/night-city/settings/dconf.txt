@@ -8,7 +8,8 @@
 /org/gnome/desktop/interface/accent-color 'yellow'
 /org/gnome/desktop/interface/gtk-theme 'adw-gtk3-dark'
 /org/gnome/desktop/interface/icon-theme 'Papirus-Dark'
-/org/gnome/desktop/interface/cursor-theme 'Bibata-Modern-Amber'
+# @CURSOR@ is the cursor picked with install.sh --cursor (default: Cyberpunk-Neon)
+/org/gnome/desktop/interface/cursor-theme @CURSOR@
 # Rajdhani only for window titles; the main UI font stays as it is
 /org/gnome/desktop/wm/preferences/titlebar-font 'Rajdhani Bold 12'
 /org/gnome/shell/extensions/user-theme/name 'NightCity'

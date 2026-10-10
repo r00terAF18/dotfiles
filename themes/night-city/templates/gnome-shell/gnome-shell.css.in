@@ -31,9 +31,37 @@
   box-shadow: none;
 }
 
-#panel .clock {
+/* ---- Rajdhani: the whole top bar, headings, captions and labels ----
+ * Body text (notification bodies, menu items, quick-toggle labels) keeps the default font. */
+#panel .panel-button,
+#panel .panel-button StLabel,
+#panel .clock,
+.quick-toggle-menu .header .title,
+.quick-toggle-menu .header .subtitle,
+.message-notification-group .message-group-header .message-group-title,
+.message .message-header .message-header-content .message-source-title,
+.message .message-box .message-content .message-title,
+.datemenu-today-button .day-label,
+.datemenu-today-button .date-label,
+.calendar .calendar-month-header .calendar-month-label,
+.calendar .calendar-day-heading,
+.events-button .events-box .events-title,
+.world-clocks-button .world-clocks-header,
+.weather-button .weather-box .weather-header-box .weather-header,
+.message-dialog-content .message-dialog-title,
+.dialog-list .dialog-list-title,
+.list-search-result .list-search-result-title,
+.overview-tile .overview-icon.overview-icon-with-label StLabel,
+.grid-search-result .overview-icon.overview-icon-with-label StLabel,
+.app-folder-dialog .folder-name-container .folder-name-label,
+.dash-label,
+.window-caption {
   font-family: "Rajdhani", sans-serif;
   font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+#panel .clock {
   letter-spacing: 1px;
 }
 
