@@ -4,6 +4,19 @@
 
 # ---------------------------------------------------------------- cursor
 # Sets CURSOR_NAME to the cursor theme to write into dconf ("" = leave the cursor alone).
+# mkdir -p that records each directory it creates, so uninstall.sh can remove them again
+# once they're empty (it never removes a directory that holds anything else).
+make_dirs() {
+	local d="$1" missing=()
+	while [[ -n "$d" && "$d" != / && ! -d "$d" ]]; do
+		missing+=("$d")
+		d="$(dirname "$d")"
+	done
+	((${#missing[@]})) || return 0
+	for d in "${missing[@]}"; do record made_dir "$d"; done
+	run mkdir -p "$1"
+}
+
 install_cursor() {
 	say "Cursor ($CURSOR_CHOICE)"
 	case "$CURSOR_CHOICE" in
@@ -23,6 +36,17 @@ install_cursor() {
 	local dest="$ICONS_DIR/$NEON_CURSOR_NAME"
 	if [[ -f "$dest/index.theme" && -d "$dest/cursors" ]]; then
 		ok "$NEON_CURSOR_NAME already in ${dest/#$HOME/\~}"
+		return
+	fi
+	if [[ -e "$dest" || -L "$dest" ]]; then
+		warn "${dest/#$HOME/\~} exists but isn't a complete $NEON_CURSOR_NAME theme; left it untouched"
+		if cursor_available "$BIBATA_CURSOR_NAME"; then
+			CURSOR_NAME="$BIBATA_CURSOR_NAME"
+			warn "using $BIBATA_CURSOR_NAME for now"
+		else
+			CURSOR_NAME=''
+			warn "leaving the current cursor setting alone"
+		fi
 		return
 	fi
 	local archive=''
@@ -52,9 +76,20 @@ install_cursor() {
 		cursor_fallback "the archive doesn't contain the expected $NEON_CURSOR_NAME theme (found '${name:-nothing}')"
 		return
 	fi
-	mkdir -p "$ICONS_DIR"
+	make_dirs "$ICONS_DIR"
+	if ! mkdir "$dest"; then
+		rm -rf "$tmp"
+		warn "${dest/#$HOME/\~} appeared during install; left it untouched"
+		if cursor_available "$BIBATA_CURSOR_NAME"; then CURSOR_NAME="$BIBATA_CURSOR_NAME"; else CURSOR_NAME=''; fi
+		return
+	fi
 	record cursor_dir "$dest"
-	cp -r "$dir" "$dest"
+	if ! cp -r "$dir/." "$dest/"; then
+		rm -rf "$dest" "$tmp"
+		warn "couldn't copy the cursor files; removed the partial install"
+		CURSOR_NAME=''
+		return
+	fi
 	rm -rf "$tmp"
 	ok "$NEON_CURSOR_NAME installed in ${dest/#$HOME/\~} ($(find "$dest/cursors" | wc -l) cursor files, inherits $(sed -n 's/^Inherits=//p' "$dest/index.theme"))"
 }
@@ -96,7 +131,7 @@ install_borders() {
 			warn "${target/#$HOME/\~} exists and isn't the theme's; left alone"
 			return
 		else
-			run mkdir -p "$(dirname "$target")"
+			make_dirs "$(dirname "$target")"
 			run ln -s "$GLOW_SRC" "$target"
 			record ext_link "$target"
 			ok "${target/#$HOME/\~} -> extensions/$GLOW_UUID"
@@ -210,8 +245,7 @@ install_conky() {
 		ok "autostart entry already there"
 	else
 		[[ -e "$CONKY_AUTOSTART" ]] && { warn "${CONKY_AUTOSTART/#$HOME/\~} exists and isn't the theme's; not touching it"; return; }
-		[[ -d "$(dirname "$CONKY_AUTOSTART")" ]] || record made_dir "$(dirname "$CONKY_AUTOSTART")"
-		run mkdir -p "$(dirname "$CONKY_AUTOSTART")"
+		make_dirs "$(dirname "$CONKY_AUTOSTART")"
 		if ((DRY_RUN)); then
 			run write "$CONKY_AUTOSTART" "(Exec=sh -c \"sleep 8; exec conky -q -c $conf\")"
 		else
@@ -225,6 +259,7 @@ Exec=sh -c "sleep 8; exec conky -q -c $conf"
 NoDisplay=true
 X-GNOME-Autostart-enabled=true
 DESKTOP
+			record autostart_hash "$(path_fingerprint "$CONKY_AUTOSTART")"
 		fi
 		ok "autostart: ${CONKY_AUTOSTART/#$HOME/\~}"
 	fi
@@ -265,6 +300,9 @@ install_boot() {
 	local tdir="$PLYMOUTH_THEME_DIR/$BOOT_THEME" tmp=''
 	if [[ -f "$tdir/$BOOT_THEME.plymouth" ]]; then
 		ok "theme already in $tdir"
+	elif [[ -e "$tdir" || -L "$tdir" ]]; then
+		warn "$tdir exists but isn't a complete $BOOT_THEME theme; left it untouched"
+		return
 	elif ((DRY_RUN)); then
 		run curl "<the files of pack_2/$BOOT_THEME from github.com/$PLYMOUTH_REPO (jsDelivr as fallback)>"
 		run sudo cp -r "<tmp>/$BOOT_THEME" "$PLYMOUTH_THEME_DIR/"
@@ -314,6 +352,7 @@ install_boot() {
 		record root_dir "$tdir"
 		run sudo cp -r "$tmp/$BOOT_THEME" "$PLYMOUTH_THEME_DIR/" || { warn "copying the theme failed"; rm -rf "$tmp"; return; }
 		rm -rf "$tmp"
+		((DRY_RUN)) || record root_after "$tdir" "$(path_fingerprint "$tdir")"
 		ok "theme installed in $tdir"
 	fi
 	if ((${#add[@]})); then
@@ -333,6 +372,7 @@ install_boot() {
 		printf '# Added by the Night City theme (themes/night-city/install.sh --with-boot); uninstall.sh removes it.\nadd_dracutmodules+=" plymouth "\n' >"$f"
 		run sudo install -m 644 "$f" "$DRACUT_PLYMOUTH_CONF" || { warn "writing $DRACUT_PLYMOUTH_CONF failed"; rm -f "$f"; return; }
 		rm -f "$f"
+		((DRY_RUN)) || record root_after "$DRACUT_PLYMOUTH_CONF" "$(path_fingerprint "$DRACUT_PLYMOUTH_CONF")"
 		ok "$DRACUT_PLYMOUTH_CONF created"
 	fi
 	if [[ -f "$PLYMOUTHD_CONF" ]] && ((!DRY_RUN)); then
@@ -341,6 +381,9 @@ install_boot() {
 		record root_created "$PLYMOUTHD_CONF"
 	fi
 	run sudo plymouth-set-default-theme "$BOOT_THEME" || warn "plymouth-set-default-theme failed"
+	if ((!DRY_RUN)) && [[ -e "$PLYMOUTHD_CONF" || -L "$PLYMOUTHD_CONF" ]]; then
+		record root_after "$PLYMOUTHD_CONF" "$(path_fingerprint "$PLYMOUTHD_CONF")"
+	fi
 	record initramfs 1
 	info "rebuilding the initramfs for every kernel (takes a minute)..."
 	if run sudo reinstall-kernels; then

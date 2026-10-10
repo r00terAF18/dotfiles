@@ -46,6 +46,7 @@ themes/night-city/
 │   ├── fish/night-city.fish      fish syntax colours + STARSHIP_CONFIG
 │   ├── btop/night-city.theme
 │   ├── fastfetch/config.jsonc
+│   ├── fastfetch/kiroshi.txt
 │   ├── cava/config               cyan -> magenta -> red -> yellow gradient
 │   ├── mangohud/MangoHud.conf    your MangoHud keys/blacklist, recoloured
 │   ├── burn-my-windows/night-city.conf   TV-glitch open/close, yellow, 500 ms
@@ -65,7 +66,7 @@ themes/night-city/
 | GTK4 / libadwaita | link `~/.config/gtk-4.0/gtk.css`; dconf `color-scheme 'prefer-dark'`, `accent-color 'yellow'` | — (no gtk.css existed) |
 | GTK3 | `adw-gtk-theme` package, `gtk-theme 'adw-gtk3-dark'`, link `~/.config/gtk-3.0/gtk.css` | WhiteSur stays installed |
 | GNOME Shell | `~/.local/share/themes/NightCity` link, `user-theme name 'NightCity'` | |
-| Icons / cursor | `Papirus-Dark` + `papirus-folders -C yellow`; `Bibata-Modern-Amber` | |
+| Icons / cursor | `Papirus-Dark` + `papirus-folders -C yellow`; `Cyberpunk-Neon` cursor by default, or `Bibata-Modern-Amber` with `--cursor bibata` | |
 | Title font | Rajdhani → `~/.local/share/fonts/night-city`; `titlebar-font 'Rajdhani Bold 12'` | interface/monospace fonts |
 | Blur my Shell / Just Perfection | dconf keys in `settings/dconf.txt` (dark panel blur, dark overview, no workspace popup) | |
 | Burn My Windows | per-user from extensions.gnome.org (the AUR build doesn't support GNOME 51 yet); profile *copied* to `~/.config/burn-my-windows/profiles/` because the extension rewrites it | |
@@ -73,7 +74,8 @@ themes/night-city/
 | starship | `STARSHIP_CONFIG` (environment.d for the session, plus `conf.d/night-city.fish` so new fish shells get it straight away) | `home/.config/starship.toml` |
 | fish | `~/.config/fish/conf.d/night-city.fish` (interactive only, `set -g fish_color_*`) | `config.fish`, universal vars |
 | btop | theme file + `color_theme = "night-city"` in `btop.conf` (old value saved) | |
-| fastfetch / cava | link `config.jsonc` / `config` (neither existed) | |
+| Fastfetch | link `config.jsonc` and the Kiroshi-inspired ASCII optic `kiroshi.txt` | |
+| cava | link `config` | |
 | MangoHud | `MANGOHUD_CONFIGFILE` via environment.d (see below) | the `MangoHud.conf` symlink |
 | VS Code / Cursor | `Endormi.2077-theme` extension, `workbench.colorTheme` + `workbench.preferredDarkColorTheme` = `"2077"` | every other key |
 | Firefox | manual: [Cyberpunk 2077 UI on AMO](https://addons.mozilla.org/en-US/firefox/addon/cyberpunk-2077-ui/) → *Add to Firefox*. Remove it under `about:addons` → Themes | |
@@ -101,8 +103,10 @@ install records exactly what it installed, and `uninstall.sh --remove-packages` 
 
 ## The scripts
 
-All three are bash with `set -euo pipefail`, take `--dry-run`, and can be run again safely. Questions
-default to *no* unless you pass `--yes`. `sudo` is only used for pacman/yay/papirus-folders, after you confirm.
+All three are bash with `set -euo pipefail`, take `--dry-run`, and can be run again safely. Confirmation
+questions default to *no* unless you pass `--yes`; optional components remain opt-in with `--yes` and are
+skipped unless their flags are supplied. `sudo` is used only for package installation, papirus-folders,
+and the optional Plymouth boot splash.
 
 ### `backup.sh [--dry-run] [--dest DIR]`
 1. Creates `~/.night-city-backup/<YYYYmmdd-HHMMSS>/`.
@@ -115,7 +119,7 @@ default to *no* unless you pass `--yes`. `sudo` is only used for pacman/yay/papi
 5. Saves package presence, the papirus-folders colour and whether the font dir existed. Writes `manifest.json`.
 6. Read-only apart from the backup dir. `--dry-run` collects into a temp dir, prints the summary and deletes it.
 
-### `install.sh [--dry-run] [--yes] [--skip-packages] [--with-orbitron] [--no-editors]`
+### `install.sh [--dry-run] [--yes] [--skip-packages] [--with-orbitron] [--no-editors] [--reapply] [--cursor neon|bibata|keep] [--icons papirus] [--borders [glow|highlight|none]] [--with-conky] [--with-boot] [--boot-theme cybernetic|glitch]`
 0. Checks the tools it needs, reads the GNOME Shell version and renders `dist/` (in dry-run it only checks it).
 1. Runs `backup.sh` into a new backup dir and **stops if the backup fails**. The first install marks it as the
    pre-theme backup (`~/.night-city-backup/active`), so later re-installs never overwrite that reference.
@@ -134,6 +138,10 @@ default to *no* unless you pass `--yes`. `sudo` is only used for pacman/yay/papi
    with comments/trailing commas is left alone, with a warning.
 10. Prints the next steps (log out/in, etc.).
 
+Optional parts are the Cyberpunk-Neon cursor (default), window border, Conky HUD, and Plymouth boot
+splash. `--yes` answers confirmation prompts but does not select optional parts; add their flags to opt in.
+The boot splash automation requires systemd-boot, dracut, and `kernel-install-for-dracut`.
+
 ### `uninstall.sh [--dry-run] [--yes] [--backup DIR] [--remove-packages]`
 1. Uses the pre-theme backup (`active` marker), or the latest backup taken while the theme was off, or `--backup DIR`.
    Reads `state.tsv` from that backup and from every later one (re-installs).
@@ -144,9 +152,11 @@ default to *no* unless you pass `--yes`. `sudo` is only used for pacman/yay/papi
    Extensions the theme enabled get disabled again. Nothing else in your list changes.
 5. Editors: the two keys are restored only if they're still `"2077"`. If nothing else changed, the original file is put back byte for byte.
 6. Papirus: the previous folder colour comes back (or `papirus-folders -D`).
-7. `--remove-packages`: also removes what *this theme* installed (`pacman -Rns`, the Burn My Windows extension,
+7. Optional system files from the Plymouth splash are restored only when their recorded post-install
+   fingerprints still match. Older state logs without fingerprints are left for manual review.
+8. `--remove-packages`: also removes what *this theme* installed (`pacman -Rns`, the Burn My Windows extension,
    the 2077 editor extension, the Rajdhani dir). Without it, packages stay; they're harmless.
-8. Deletes empty dirs the theme created and the `active` marker. **Backups are kept.** Delete
+9. Deletes empty dirs the theme created and the `active` marker. **Backups are kept.** Delete
    `~/.night-city-backup` yourself when you're happy.
 
 ## Commands
@@ -180,4 +190,5 @@ cd ~/dotfiles/themes/night-city
 - Burn My Windows comes from extensions.gnome.org, not the AUR, so it updates through the Extensions app.
 - Wallpapers aren't included. Use the filtered Wallhaven search from the research notes
   (`cyberpunk 2077`, *General*, *SFW*, 16:9, ≥2560×1440) with your wallpaper manager.
-- No GRUB/Plymouth/GDM theming: this machine has neither GRUB nor Plymouth, and login theming is out of scope.
+- No GRUB or GDM theming. The optional Plymouth splash is automated only for systemd-boot + dracut +
+  `kernel-install-for-dracut`; other boot setups are left untouched.

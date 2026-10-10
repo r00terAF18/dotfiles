@@ -24,6 +24,7 @@ NC_FILES=(
 	"$HOME/.config/environment.d/60-night-city.conf|$NC_DIST/environment.d/60-night-city.conf|link"
 	"$HOME/.config/btop/themes/night-city.theme|$NC_DIST/btop/night-city.theme|link"
 	"$HOME/.config/fastfetch/config.jsonc|$NC_DIST/fastfetch/config.jsonc|link"
+	"$HOME/.config/fastfetch/kiroshi.txt|$NC_DIST/fastfetch/kiroshi.txt|link"
 	"$HOME/.config/cava/config|$NC_DIST/cava/config|link"
 	"$HOME/.config/burn-my-windows/profiles/night-city.conf|$NC_DIST/burn-my-windows/night-city.conf|copy"
 )
@@ -199,6 +200,46 @@ same_value() {
 	[[ "$1" =~ ^-?[0-9.]+$ && "$2" =~ ^-?[0-9.]+$ ]] && awk -v a="$1" -v b="$2" 'BEGIN { exit !(a + 0 == b + 0) }'
 }
 
+# Fingerprint a file or directory tree so uninstall can detect edits made after installation.
+# Includes paths, file contents, symlink targets, permissions, and ownership.
+path_fingerprint() {
+	python3 - "$1" <<'PY'
+import hashlib
+import os
+import stat
+import sys
+
+root = os.path.abspath(sys.argv[1])
+digest = hashlib.sha256()
+
+def visit(path, rel):
+	st = os.lstat(path)
+	name = os.fsencode(rel)
+	meta = f"{stat.S_IMODE(st.st_mode)}:{st.st_uid}:{st.st_gid}".encode()
+	if stat.S_ISLNK(st.st_mode):
+		digest.update(b"L\0" + name + b"\0" + meta + b"\0" + os.fsencode(os.readlink(path)) + b"\0")
+	elif stat.S_ISDIR(st.st_mode):
+		digest.update(b"D\0" + name + b"\0" + meta + b"\0")
+		for child in sorted(os.listdir(path), key=os.fsencode):
+			child_rel = child if rel == "." else os.path.join(rel, child)
+			visit(os.path.join(path, child), child_rel)
+	elif stat.S_ISREG(st.st_mode):
+		digest.update(b"F\0" + name + b"\0" + meta + b"\0")
+		with open(path, "rb") as stream:
+			for block in iter(lambda: stream.read(1024 * 1024), b""):
+				digest.update(block)
+	else:
+		digest.update(b"O\0" + name + b"\0" + meta + b"\0" + str(st.st_rdev).encode() + b"\0")
+
+try:
+	visit(root, ".")
+except FileNotFoundError:
+	print("missing")
+else:
+	print(digest.hexdigest())
+PY
+}
+
 # Highest missing directory above a path ("" if its parent already exists), so uninstall can
 # remove directories the theme created once they're empty again.
 missing_root() {
@@ -251,7 +292,7 @@ for n in range(1, 10):
 		return 0
 	fi
 	mkdir -p "$DOWNLOAD_CACHE"
-	if curl -fsL --connect-timeout 15 --max-time 180 -o "$DOWNLOAD_CACHE/$name.part" "$link" &&
+	if curl -fsSL --connect-timeout 15 --max-time 180 -o "$DOWNLOAD_CACHE/$name.part" "$link" &&
 		md5ok "$DOWNLOAD_CACHE/$name.part"; then
 		mv "$DOWNLOAD_CACHE/$name.part" "$DOWNLOAD_CACHE/$name"
 		echo "$DOWNLOAD_CACHE/$name"

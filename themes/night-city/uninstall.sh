@@ -301,9 +301,12 @@ if [[ -n "$(state conky_dir)$(state autostart)" ]]; then
 		run pkill -u "$USER" -f "conky.*$CONKY_DIR"
 		ok "stopped the conky HUD"
 	fi
+	autostart_hash="$(state autostart_hash | tail -1)"
 	while read -r f; do
 		[[ -n "$f" && -f "$f" ]] || continue
-		if grep -q 'night-city' "$f"; then
+		if [[ -z "$autostart_hash" ]]; then
+			warn "${f/#$HOME/\~} has no recorded fingerprint (older install); left alone"
+		elif [[ "$(path_fingerprint "$f")" == "$autostart_hash" ]]; then
 			run rm -f "$f"
 			ok "removed ${f/#$HOME/\~}"
 		else
@@ -323,7 +326,7 @@ while read -r d; do
 	[[ -n "$d" && -d "$d" ]] || continue
 	run rmdir --ignore-fail-on-non-empty "$d"
 	[[ -d "$d" ]] || ok "removed empty ${d/#$HOME/\~}"
-done <<<"$(state made_dir)"
+done <<<"$(state made_dir | awk '{ print length, $0 }' | sort -rn | cut -d' ' -f2-)"
 # Boot splash: needs sudo, so it's confirmed separately.
 added_words="$(state cmdline_added | tr '\n' ' ')"
 boot_dirs="$(state root_dir)" boot_created="$(state root_created)" boot_saved="$(state_rows root_backup)"
@@ -339,6 +342,7 @@ if [[ -n "$added_words$boot_dirs$boot_created$boot_saved$(state initramfs)" ]]; 
 		diff -u --label "$KERNEL_CMDLINE (now)" --label "$KERNEL_CMDLINE (after)" <(echo "$cur_cmdline") <(echo "$new_cmdline") | sed 's/^/      /' || true
 	fi
 	if confirm "Undo the boot splash changes?"; then
+		boot_changed=0
 		if [[ "$new_cmdline" != "$cur_cmdline" ]]; then
 			if [[ "$new_cmdline" == *root=* ]]; then
 				f="$(mktemp)"
@@ -348,39 +352,93 @@ if [[ -n "$added_words$boot_dirs$boot_created$boot_saved$(state initramfs)" ]]; 
 				if [[ -f "$orig" && "$(tr -s ' \n' ' ' <"$orig" | sed 's/ *$//')" == "$new_cmdline" ]]; then
 					cp "$orig" "$f"
 				fi
-				run sudo install -m 644 "$f" "$KERNEL_CMDLINE" && ok "$KERNEL_CMDLINE: removed ${added_words% }" || warn "writing $KERNEL_CMDLINE failed"
+				if run sudo install -m 644 "$f" "$KERNEL_CMDLINE"; then
+					ok "$KERNEL_CMDLINE: removed ${added_words% }"
+					boot_changed=1
+				else
+					warn "writing $KERNEL_CMDLINE failed"
+				fi
 				rm -f "$f"
 			else
 				warn "the restored command line would have no root=; left $KERNEL_CMDLINE alone"
 			fi
 		fi
-		while IFS=$'\t' read -r path saved; do
-			[[ -n "$path" && -f "$saved" ]] || continue
-			if [[ -f "$path" ]] && grep -qE "^Theme=($(IFS='|'; echo "${PLYMOUTH_THEMES[*]}"))$" "$path"; then
-				run sudo install -m 644 "$saved" "$path" && ok "$path restored"
-			elif [[ -f "$path" ]]; then
-				warn "$path was changed since install; left alone (original: $saved)"
-			fi
-		done <<<"$boot_saved"
-		while read -r path; do
-			[[ -n "$path" && -f "$path" ]] || continue
-			if [[ "$path" == "$DRACUT_PLYMOUTH_CONF" ]] && ! grep -q 'Night City' "$path"; then
-				warn "$path doesn't look like the theme's; left alone"
+		declare -A ROOT_BASE_KIND ROOT_BASE_SAVED ROOT_EXPECTED
+		while IFS=$'\t' read -r kind path value; do
+			[[ -n "$path" ]] || continue
+			case "$kind" in
+			root_backup | root_created)
+				if [[ -z "${ROOT_BASE_KIND[$path]+x}" ]]; then
+					ROOT_BASE_KIND["$path"]="$kind"
+					[[ "$kind" == root_backup ]] && ROOT_BASE_SAVED["$path"]="$value"
+				fi
+				;;
+			root_after) ROOT_EXPECTED["$path"]="$value" ;;
+			esac
+		done <"$STATE_ROWS"
+		for path in "$PLYMOUTHD_CONF" "$DRACUT_PLYMOUTH_CONF"; do
+			kind="${ROOT_BASE_KIND[$path]:-}"
+			[[ -n "$kind" ]] || continue
+			[[ -e "$path" || -L "$path" ]] || { ok "$path already absent"; continue; }
+			expected="${ROOT_EXPECTED[$path]:-}"
+			if [[ -z "$expected" ]]; then
+				warn "$path has no recorded post-install fingerprint (older install); left alone"
 				continue
 			fi
-			run sudo rm -f "$path" && ok "removed $path"
-		done <<<"$boot_created"
+			if [[ "$(path_fingerprint "$path")" != "$expected" ]]; then
+				warn "$path changed since install; left alone"
+				continue
+			fi
+			if [[ "$kind" == root_created ]]; then
+				if run sudo rm -f "$path"; then
+					ok "removed $path"
+					boot_changed=1
+				else
+					warn "removing $path failed"
+				fi
+			else
+				saved="${ROOT_BASE_SAVED[$path]:-}"
+				if [[ -z "$saved" || ! -f "$saved" ]]; then
+					warn "$path's original backup is missing; left alone"
+					continue
+				fi
+				mode="$(stat -c '%a' "$saved")"
+				if run sudo install -m "$mode" "$saved" "$path"; then
+					ok "$path restored from its first pre-theme backup"
+					boot_changed=1
+				else
+					warn "restoring $path failed"
+				fi
+			fi
+		done
 		while read -r path; do
 			[[ -n "$path" && -d "$path" ]] || continue
 			case "$path" in
 			"$PLYMOUTH_THEME_DIR"/cybernetic | "$PLYMOUTH_THEME_DIR"/glitch)
-				run sudo rm -rf "$path" && ok "removed $path" ;;
+				expected="${ROOT_EXPECTED[$path]:-}"
+				if [[ -z "$expected" ]]; then
+					warn "$path has no recorded post-install fingerprint (older install); left alone"
+				elif [[ "$(path_fingerprint "$path")" != "$expected" ]]; then
+					warn "$path changed since install; left alone"
+				elif [[ -f "$PLYMOUTHD_CONF" ]] && grep -Fqx "Theme=$(basename "$path")" "$PLYMOUTHD_CONF"; then
+					warn "$path is still selected in $PLYMOUTHD_CONF; left in place"
+				elif run sudo rm -rf "$path"; then
+					ok "removed $path"
+					boot_changed=1
+				else
+					warn "removing $path failed"
+				fi
+				;;
 			*) warn "not removing $path (unexpected path)" ;;
 			esac
 		done <<<"$boot_dirs"
-		info "rebuilding the initramfs for every kernel..."
-		run sudo reinstall-kernels && ok "initramfs rebuilt without Plymouth; reboot to check" ||
-			warn "reinstall-kernels failed; run 'sudo reinstall-kernels' yourself before rebooting"
+		if ((boot_changed)); then
+			info "rebuilding the initramfs for every kernel..."
+			run sudo reinstall-kernels && ok "initramfs rebuilt without Plymouth; reboot to check" ||
+				warn "reinstall-kernels failed; run 'sudo reinstall-kernels' yourself before rebooting"
+		else
+			info "no boot files changed; initramfs was not rebuilt"
+		fi
 	else
 		warn "boot splash left in place (run uninstall.sh again to undo it)"
 	fi
