@@ -1,0 +1,5 @@
+# Night City (Cyberpunk 2077) session variables, read by systemd/GNOME at login.
+# Linked to ~/.config/environment.d/60-night-city.conf by install.sh; takes effect after logout.
+# ~/.config/night-city is a link to themes/night-city/dist in the dotfiles repo.
+STARSHIP_CONFIG=${HOME}/.config/night-city/starship/starship.toml
+MANGOHUD_CONFIGFILE=${HOME}/.config/night-city/mangohud/MangoHud.conf

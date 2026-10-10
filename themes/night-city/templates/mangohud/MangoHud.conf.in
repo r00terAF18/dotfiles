@@ -1,0 +1,51 @@
+### Night City (Cyberpunk 2077) MangoHud config.
+### Generated from themes/night-city/palette.sh by generate.sh; edit the template, not dist/.
+###
+### Not linked over ~/.config/MangoHud/MangoHud.conf (that stays your dotfiles file). Instead
+### ~/.config/environment.d/60-night-city.conf sets MANGOHUD_CONFIGFILE to this file for the
+### whole session, so uninstalling is just removing that one line. Same layout, keys and
+### blacklist as home/.config/MangoHud/MangoHud.conf; only the colours differ.
+
+legacy_layout=0
+background_alpha=0.75
+round_corners=0
+background_color={{bg0_hex}}
+font_size=24
+text_color={{fg_hex}}
+text_outline_color={{bg0_hex}}
+position=top-right
+toggle_hud=Shift_R+F12
+
+gpu_list=0
+table_columns=3
+
+gpu_text=GPU
+gpu_stats
+gpu_temp
+gpu_color={{yellow_hex}}
+cpu_text=CPU
+cpu_stats
+cpu_temp
+cpu_color={{cyan_hex}}
+ram
+ram_color={{magenta_hex}}
+vram
+vram_color={{red_hex}}
+
+fps
+fps_color_change
+fps_color={{red_hex}},{{yellow_hex}},{{green_hex}}
+fps_value=30,60
+engine_color={{yellow_hex}}
+frame_timing
+frametime_color={{cyan_hex}}
+
+fps_limit_method=late
+fps_limit=60
+
+output_folder=/home/amir/.local/share/goverlay
+log_duration=30
+log_interval=100
+toggle_logging=Shift_L+F2
+
+blacklist=zenity,protonplus,lsfg-vk-ui,bazzar,gnome-calculator,pamac-manager,lact,ghb,bitwig-studio,ptyxis,yumex
