@@ -42,3 +42,10 @@ set -g fish_pager_color_prefix {{yellow_hex}} --bold
 set -g fish_pager_color_completion {{fg_hex}}
 set -g fish_pager_color_description {{fg_dim_hex}}
 set -g fish_pager_color_selected_background --background={{bg2_hex}}
+set -g fish_pager_color_selected_prefix {{bg0_hex}} --background={{yellow_hex}} --bold
+set -g fish_pager_color_selected_completion {{fg_hex}}
+set -g fish_pager_color_selected_description {{fg_dim_hex}}
+set -g fish_pager_color_secondary_background --background={{bg0_hex}}
+set -g fish_pager_color_secondary_prefix {{cyan_hex}}
+set -g fish_pager_color_secondary_completion {{fg_hex}}
+set -g fish_pager_color_secondary_description {{fg_dim_hex}}

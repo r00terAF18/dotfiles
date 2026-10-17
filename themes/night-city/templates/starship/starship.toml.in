@@ -53,6 +53,12 @@ style_user = "bg:yellow fg:bg0 bold"
 style_root = "bg:yellow fg:red bold"
 format = "[$user ]($style)"
 
+[hostname]
+ssh_only = true
+ssh_symbol = "↗ "
+style = "bg:yellow fg:bg0 bold"
+format = "[$ssh_symbol$hostname ]($style)"
+
 [directory]
 style = "bg:cyan fg:bg0 bold"
 format = "[ $path ]($style)[$read_only]($read_only_style)"

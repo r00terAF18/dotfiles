@@ -94,7 +94,7 @@ uninstall scripts.
 | Blur my Shell / Just Perfection | dconf keys in `settings/dconf.txt` (dark panel blur, dark overview, no workspace popup) | |
 | Burn My Windows | per-user from extensions.gnome.org (the AUR build doesn't support GNOME 51 yet); profile *copied* to `~/.config/burn-my-windows/profiles/` because the extension rewrites it | |
 | kitty | link `current-theme.conf` (your `kitty.conf` already ends with `globinclude current-theme.conf`) **and** `dark-theme.auto.conf`, because kitty's auto dark theme overrides colours in dark mode. Sets JetBrainsMono Nerd Font 12, 12pt text padding, slim neon pane borders, tab labels, palette, cursor and powerline tabs. | `kitty.conf` |
-| starship / fish CLI | `STARSHIP_CONFIG` (environment.d for the session, plus `conf.d/night-city.fish` so new fish shells get it straight away); prompt shows user, path, git state, toolchain, status, duration and time in the Night City palette. Fish syntax colors apply interactively. | `home/.config/starship.toml`, `config.fish`, universal vars |
+| starship / fish CLI | `STARSHIP_CONFIG` (environment.d for the session, plus `conf.d/night-city.fish` so new fish shells get it straight away); prompt shows user, SSH host, path, git state, toolchain, status, duration and time in the Night City palette. Fish syntax and completion colors apply interactively. | `home/.config/starship.toml`, `config.fish`, universal vars |
 | btop | theme file + `color_theme = "night-city"` in `btop.conf` (old value saved) | |
 | Fastfetch / Neofetch | Fastfetch defaults to Kiroshi ASCII; Neofetch defaults to Judy's portrait in Kitty. Both get Afterlife and Judy ASCII options plus two image options. | |
 | cava | link `config` | |

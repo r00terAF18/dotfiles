@@ -42,3 +42,10 @@ set -g fish_pager_color_prefix FCEE0A --bold
 set -g fish_pager_color_completion E4F7F7
 set -g fish_pager_color_description 7A8C99
 set -g fish_pager_color_selected_background --background=1B1D26
+set -g fish_pager_color_selected_prefix 0A0A0F --background=FCEE0A --bold
+set -g fish_pager_color_selected_completion E4F7F7
+set -g fish_pager_color_selected_description 7A8C99
+set -g fish_pager_color_secondary_background --background=0A0A0F
+set -g fish_pager_color_secondary_prefix 00F0FF
+set -g fish_pager_color_secondary_completion E4F7F7
+set -g fish_pager_color_secondary_description 7A8C99
