@@ -44,8 +44,8 @@ themes/night-city/
 │   ├── themes/NightCity/gtk-3.0/gtk.css  XFCE GTK3 accent and selection colours
 │   ├── themes/NightCity/xfwm4/themerc    XFCE window title and decoration colours
 │   ├── themes/NightCity/gnome-shell/gnome-shell.css   minimal shell theme on top of the default
-│   ├── kitty/night-city.conf     colours, tab bar, cursor trail
-│   ├── starship/starship.toml    powerline prompt, palette "night_city"
+│   ├── kitty/night-city.conf     colours, JetBrains Mono, window borders/padding and tab labels
+│   ├── starship/starship.toml    powerline CLI prompt, palette "night_city"
 │   ├── fish/night-city.fish      fish syntax colours + STARSHIP_CONFIG
 │   ├── btop/night-city.theme
 │   ├── fastfetch/config.jsonc
@@ -93,9 +93,8 @@ uninstall scripts.
 | Title font | Rajdhani → `~/.local/share/fonts/night-city`; `titlebar-font 'Rajdhani Bold 12'` | interface/monospace fonts |
 | Blur my Shell / Just Perfection | dconf keys in `settings/dconf.txt` (dark panel blur, dark overview, no workspace popup) | |
 | Burn My Windows | per-user from extensions.gnome.org (the AUR build doesn't support GNOME 51 yet); profile *copied* to `~/.config/burn-my-windows/profiles/` because the extension rewrites it | |
-| kitty | link `current-theme.conf` (your `kitty.conf` already ends with `globinclude current-theme.conf`) **and** `dark-theme.auto.conf`, because kitty's auto dark theme overrides colours in dark mode. The old "Cherry" `dark-theme.auto.conf` goes into the backup | `kitty.conf` |
-| starship | `STARSHIP_CONFIG` (environment.d for the session, plus `conf.d/night-city.fish` so new fish shells get it straight away) | `home/.config/starship.toml` |
-| fish | `~/.config/fish/conf.d/night-city.fish` (interactive only, `set -g fish_color_*`) | `config.fish`, universal vars |
+| kitty | link `current-theme.conf` (your `kitty.conf` already ends with `globinclude current-theme.conf`) **and** `dark-theme.auto.conf`, because kitty's auto dark theme overrides colours in dark mode. Sets JetBrainsMono Nerd Font 12, 12pt text padding, slim neon pane borders, tab labels, palette, cursor and powerline tabs. | `kitty.conf` |
+| starship / fish CLI | `STARSHIP_CONFIG` (environment.d for the session, plus `conf.d/night-city.fish` so new fish shells get it straight away); prompt shows user, path, git state, toolchain, status, duration and time in the Night City palette. Fish syntax colors apply interactively. | `home/.config/starship.toml`, `config.fish`, universal vars |
 | btop | theme file + `color_theme = "night-city"` in `btop.conf` (old value saved) | |
 | Fastfetch / Neofetch | Fastfetch defaults to Kiroshi ASCII; Neofetch defaults to Judy's portrait in Kitty. Both get Afterlife and Judy ASCII options plus two image options. | |
 | cava | link `config` | |
