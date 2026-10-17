@@ -1,0 +1,19 @@
+# Night City GTK3 fallback colors for XFCE applications.
+# GTK 3 apps also load ../gtk-3.0/gtk.css through the theme installer.
+style "night-city-xfce" {
+  bg[NORMAL] = "#0A0A0F"
+  bg[ACTIVE] = "#12131A"
+  bg[PRELIGHT] = "#1B1D26"
+  fg[NORMAL] = "#E4F7F7"
+  fg[INSENSITIVE] = "#7A8C99"
+  base[NORMAL] = "#12131A"
+  base[SELECTED] = "#00F0FF"
+  text[NORMAL] = "#E4F7F7"
+  text[SELECTED] = "#0A0A0F"
+  engine "murrine" {
+    contrast = 0.1
+    highlight_shade = 1.0
+    glow_shade = 1.0
+  }
+}
+class "*" style "night-city-xfce"

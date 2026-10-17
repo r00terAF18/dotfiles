@@ -1,0 +1,13 @@
+# Night City XFWM4 window decorations
+# Generated from palette.sh; edit the template, not dist/.
+active_text_color=#FCEE0A
+inactive_text_color=#7A8C99
+active_text_shadow_color=#0A0A0F
+inactive_text_shadow_color=#12131A
+title_shadow_active=false
+title_shadow_inactive=false
+button_offset=4
+button_spacing=4
+button_layout=O|HMC
+full_width_title=true
+show_app_icon=false

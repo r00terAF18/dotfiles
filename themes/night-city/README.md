@@ -1,6 +1,6 @@
 # Night City — a Cyberpunk 2077 theme
 
-A Cyberpunk 2077 look for EndeavourOS + GNOME 51. It layers on top of the normal setup and comes off
+A Cyberpunk 2077 look for EndeavourOS, with GNOME 51 integration and a selectable XFCE GTK/XFWM theme. It layers on top of the normal setup and comes off
 cleanly. Nothing in `home/` is touched. The WhiteSur theme stays installed, and uninstalling
 switches back to it.
 
@@ -41,6 +41,8 @@ themes/night-city/
 ├── dist/                 rendered files (what gets linked)
 │   ├── gtk-4.0/gtk.css           libadwaita: :root variables + @define-color, title font, neon headerbar line
 │   ├── gtk-3.0/gtk.css           adw-gtk3 colour overrides
+│   ├── themes/NightCity/gtk-3.0/gtk.css  XFCE GTK3 accent and selection colours
+│   ├── themes/NightCity/xfwm4/themerc    XFCE window title and decoration colours
 │   ├── themes/NightCity/gnome-shell/gnome-shell.css   minimal shell theme on top of the default
 │   ├── kitty/night-city.conf     colours, tab bar, cursor trail
 │   ├── starship/starship.toml    powerline prompt, palette "night_city"
@@ -55,6 +57,7 @@ themes/night-city/
 │   ├── burn-my-windows/night-city.conf   TV-glitch open/close, yellow, 500 ms
 │   └── environment.d/60-night-city.conf  STARSHIP_CONFIG, MANGOHUD_CONFIGFILE
 ├── settings/dconf.txt    every dconf key the theme sets (key value)
+├── xfce4-settings.txt    manual XFCE appearance and panel setup
 ├── lib/common.sh         paths, file list, packages, helpers shared by the scripts
 ├── lib/optional.sh       cursor, window-border, Conky and Plymouth installers
 ├── lib/conky_adapt.py    adapts the optional cyberpunk-conky HUD
@@ -65,6 +68,21 @@ themes/night-city/
 ```
 
 ## Where each piece goes
+
+### XFCE
+
+The generated `dist/themes/NightCity` directory is a selectable XFCE theme. Link or copy it to
+`~/.local/share/themes/NightCity`, then choose **NightCity** under **Settings → Appearance → Style**
+and **Settings → Window Manager → Style**. GTK3 applications receive the shared Night City palette;
+XFWM4 uses yellow active title text and dim inactive text. XFCE panel color, compositor shadow color,
+and layout are user-configured separately; suggested values are in `xfce4-settings.txt`. For example:
+
+```sh
+ln -s /path/to/dotfiles/themes/night-city/dist/themes/NightCity ~/.local/share/themes/NightCity
+```
+
+Restart apps after switching themes. This is an XFCE theme asset, independent from the GNOME install and
+uninstall scripts.
 
 | Piece | How it's applied | Doesn't touch |
 | --- | --- | --- |

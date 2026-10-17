@@ -1,0 +1,11 @@
+# Night City XFCE settings. Apply these in Settings Manager:
+# Appearance > Style: NightCity
+# Appearance > Icons: Papirus-Dark (optional)
+# Window Manager > Style: NightCity
+# Window Manager Tweaks > Compositor: enable compositing; set shadow color to #00F0FF
+# Panel > Appearance > Style: solid color; background #12131A, foreground #E4F7F7
+# Panel > Items: use separators and a whisker menu for a compact cyberdeck layout.
+#
+# GTK applications also need the generated NightCity GTK stylesheet. The XFCE theme directory
+# contains gtk-3.0/gtk.css and xfwm4/themerc; install the theme directory under
+# ~/.local/share/themes/NightCity, then choose NightCity in Appearance and Window Manager.
