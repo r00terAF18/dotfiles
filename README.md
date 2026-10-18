@@ -28,7 +28,7 @@ scripts/packages/install.sh --dry-run
 
 ### HyprYou / Hyprland
 
-`hypryou` is listed in `packages/aur.txt` and installed through the package workflow with `yay`. After installation, choose the **HyprYou** session in the login manager; keep **Xfce** available as the fallback session. HyprYou provides its own session configuration, so this repo does not symlink a HyprYou config into `~/.config`.
+`hypryou` is listed in `packages/aur.txt` and installed through the package workflow with `yay`. After installation, choose the **HyprYou** session in the login manager; keep **Xfce** available as the fallback session. User Lua overrides live in `home/.config/hypryou/hyprland.lua` and can be linked on their own with `scripts/link-dotfiles.sh --only .config/hypryou/hyprland.lua`.
 
 ### Adding a config
 

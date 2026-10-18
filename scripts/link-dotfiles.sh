@@ -3,20 +3,33 @@
 # Existing files are moved to ~/.dotfiles-backup/<timestamp>/<path> first.
 # Safe to re-run: correct links are left alone.
 #
-# usage: scripts/link-dotfiles.sh [--dry-run|-n]
+# usage: scripts/link-dotfiles.sh [--dry-run|-n] [--only RELATIVE_PATH]
 set -euo pipefail
 
 DRY_RUN=0
-case "${1:-}" in
-	-n | --dry-run) DRY_RUN=1 ;;
-	-h | --help) sed -n '2,6p' "$0"; exit 0 ;;
-	"") ;;
-	*) echo "unknown option: $1" >&2; exit 1 ;;
-esac
+ONLY_REL=""
+while (($#)); do
+	case "$1" in
+		-n | --dry-run) DRY_RUN=1 ;;
+		--only)
+			(($# >= 2)) || { echo "--only requires a path under home/" >&2; exit 1; }
+			ONLY_REL="$2"
+			shift
+			;;
+		-h | --help) sed -n '2,6p' "$0"; exit 0 ;;
+		*) echo "unknown option: $1" >&2; exit 1 ;;
+	esac
+	shift
+done
 
 REPO_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)"
 SRC_DIR="$REPO_DIR/home"
 BACKUP_DIR="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
+
+if [[ -n "$ONLY_REL" && ! -e "$SRC_DIR/$ONLY_REL" && ! -L "$SRC_DIR/$ONLY_REL" ]]; then
+	echo "not found under home/: $ONLY_REL" >&2
+	exit 1
+fi
 
 run() {
 	if ((DRY_RUN)); then
@@ -30,6 +43,7 @@ linked=0 skipped=0 backed_up=0
 
 while IFS= read -r -d '' src; do
 	rel="${src#"$SRC_DIR"/}"
+	[[ -z "$ONLY_REL" || "$rel" == "$ONLY_REL" ]] || continue
 	dest="$HOME/$rel"
 
 	if [[ -L "$dest" && "$(readlink "$dest")" == "$src" ]]; then

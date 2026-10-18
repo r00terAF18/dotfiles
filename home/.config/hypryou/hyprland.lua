@@ -1,0 +1,2 @@
+-- HyprYou loads its built-in configuration first, then this file for user overrides.
+-- Keep personal Lua overrides here so the dotfiles repo can manage them.

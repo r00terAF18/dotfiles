@@ -7,7 +7,7 @@ Run these from the repository root. The workflow scripts and their helper code l
 | Script | Workflow |
 | --- | --- |
 | `scripts/setup-system.sh [--yes]` | Run the interactive fresh-system sequence: install packages, link home configs, restore GNOME, then set up AI tools. `--yes` accepts each step. |
-| `scripts/link-dotfiles.sh [--dry-run]` | Link every file under `home/` into `$HOME`. Existing files are moved to `~/.dotfiles-backup/` first. |
+| `scripts/link-dotfiles.sh [--dry-run] [--only PATH]` | Link files under `home/` into `$HOME`. `--only PATH` links one path; existing files are moved to `~/.dotfiles-backup/` first. |
 | `scripts/backup-desktop-configs.sh` | Save private snapshots of installed desktop settings and package inventory under ignored `backups/`. |
 | `scripts/packages/install.sh [--dry-run]` | Install packages from `packages/pacman.txt` and `packages/aur.txt`. `--dump` refreshes those manifests from the current system. |
 | `scripts/ai-tools/setup.sh` | Configure Serena, Context7, and Repomix for Cursor and GapCode. |
