@@ -10,6 +10,7 @@ gitbutler-bin
 gnome-shell-extension-dash-to-dock
 grok-bot-bin
 happ-desktop-bin
+hypryou
 lib32-openal
 lib32-sdl2-compat
 megasync-bin

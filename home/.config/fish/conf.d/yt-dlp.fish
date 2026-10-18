@@ -29,7 +29,7 @@ function _yt_video --argument-names quality url mode short
     test "$mode" = playlist; and set out "$__video_root/%(playlist)s/%(upload_date>%Y-%m-%d)s - %(title)s.%(ext)s"
     set -l extra
     test "$short" = short; and set extra --match-filter 'duration < 60'
-    yt-dlp -f "bv[height<=$quality][fps<=60]+ba" $__efficient $extra $__yt_args $__eng_subs -o $out $url
+    yt-dlp -f "bv[height<=$quality][fps<=60]+ba" $__efficient $extra $__yt_args -o $out $url
 end
 function yt_480_d; _yt_video 480 $argv[1] single short; end
 function yt_1080;  _yt_video 1080 $argv[1]; end

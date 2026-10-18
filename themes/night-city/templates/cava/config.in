@@ -1,6 +1,6 @@
 ## Night City (Cyberpunk 2077) config for cava.
-## Generated from themes/night-city/palette.sh by generate.sh; edit the template, not dist/.
-## Linked to ~/.config/cava/config by install.sh. Everything not set here uses cava's defaults.
+## Generated from scripts/night-city/palette.sh by scripts/night-city/generate.sh; edit the template, not dist/.
+## Linked to ~/.config/cava/config by scripts/night-city/install.sh. Everything not set here uses cava's defaults.
 
 [general]
 framerate = 60

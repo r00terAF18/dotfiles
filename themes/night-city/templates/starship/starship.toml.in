@@ -1,5 +1,5 @@
 # Night City (Cyberpunk 2077) prompt for starship.
-# Generated from themes/night-city/palette.sh by generate.sh; edit the template, not dist/.
+# Generated from scripts/night-city/palette.sh by scripts/night-city/generate.sh; edit the template, not dist/.
 # Used through STARSHIP_CONFIG (set by ~/.config/environment.d/60-night-city.conf and
 # ~/.config/fish/conf.d/night-city.fish), so the dotfiles' own starship.toml stays untouched.
 # Needs a Nerd Font (JetBrainsMono Nerd Font is fine).
@@ -147,4 +147,3 @@ disabled = false
 success_symbol = "[❯](bold yellow)"
 error_symbol = "[❯](bold red)"
 vimcmd_symbol = "[❮](bold cyan)"
-

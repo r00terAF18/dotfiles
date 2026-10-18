@@ -1,6 +1,6 @@
 // Night City (Cyberpunk 2077) config for fastfetch.
-// Generated from themes/night-city/palette.sh by generate.sh; edit the template, not dist/.
-// Linked to ~/.config/fastfetch/config.jsonc by install.sh. Needs a Nerd Font.
+// Generated from scripts/night-city/palette.sh by scripts/night-city/generate.sh; edit the template, not dist/.
+// Linked to ~/.config/fastfetch/config.jsonc by scripts/night-city/install.sh. Needs a Nerd Font.
 {
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
   "logo": {

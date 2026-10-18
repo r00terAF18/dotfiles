@@ -1,6 +1,6 @@
 # Night City (Cyberpunk 2077) colours for fish, plus the starship prompt switch.
-# Generated from themes/night-city/palette.sh by generate.sh; edit the template, not dist/.
-# Linked to ~/.config/fish/conf.d/night-city.fish by install.sh. Everything is set in
+# Generated from scripts/night-city/palette.sh by scripts/night-city/generate.sh; edit the template, not dist/.
+# Linked to ~/.config/fish/conf.d/night-city.fish by scripts/night-city/install.sh. Everything is set in
 # global scope, so removing this file restores your own (universal) fish colours.
 
 status is-interactive; or return

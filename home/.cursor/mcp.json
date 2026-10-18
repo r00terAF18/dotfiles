@@ -2,15 +2,57 @@
   "mcpServers": {
     "serena": {
       "command": "/home/amir/.local/bin/serena",
-      "args": ["start-mcp-server", "--context", "ide", "--project-from-cwd", "--open-web-dashboard", "false"]
+      "args": [
+        "start-mcp-server",
+        "--context",
+        "ide",
+        "--project-from-cwd",
+        "--open-web-dashboard",
+        "false"
+      ]
     },
     "context7": {
       "command": "npx",
-      "args": ["-y", "@upstash/context7-mcp"]
+      "args": [
+        "-y",
+        "@upstash/context7-mcp"
+      ]
     },
     "repomix": {
       "command": "npx",
-      "args": ["-y", "repomix", "--mcp"]
+      "args": [
+        "-y",
+        "repomix",
+        "--mcp"
+      ]
+    },
+    "jcodemunch": {
+      "command": "/home/amir/.local/bin/jcodemunch-mcp",
+      "args": [
+        "serve"
+      ]
+    },
+    "stacklit": {
+      "command": "/home/amir/.local/share/nvm/v24.21.0/bin/stacklit",
+      "args": [
+        "serve"
+      ]
+    },
+    "sdl-mcp": {
+      "command": "/home/amir/.local/share/nvm/v24.21.0/bin/sdl-mcp",
+      "args": [
+        "serve"
+      ]
+    },
+    "godot-mcp-toolkit": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@npgamedev/godot-mcp-server"
+      ],
+      "env": {
+        "GODOT_MCP_CONFIG_VERSION": "1"
+      }
     }
   }
 }

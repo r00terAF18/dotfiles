@@ -1,6 +1,6 @@
 # dconf keys Night City writes: "<key> <GVariant value>", one per line.
-# backup.sh records the current value of each key (or that it is unset), install.sh writes
-# these values, and uninstall.sh puts back exactly what was there (or resets the key).
+# scripts/night-city/backup.sh records each current value (or unset state), scripts/night-city/install.sh writes
+# these values, and scripts/night-city/uninstall.sh restores them (or resets the key).
 # Extension keys can be written before the extension is installed; dconf doesn't need the schema.
 
 # ---- Appearance ----
@@ -8,7 +8,7 @@
 /org/gnome/desktop/interface/accent-color 'yellow'
 /org/gnome/desktop/interface/gtk-theme 'adw-gtk3-dark'
 /org/gnome/desktop/interface/icon-theme 'Papirus-Dark'
-# @CURSOR@ is the cursor picked with install.sh --cursor (default: Cyberpunk-Neon)
+# @CURSOR@ is the cursor picked with scripts/night-city/install.sh --cursor (default: Cyberpunk-Neon)
 /org/gnome/desktop/interface/cursor-theme @CURSOR@
 # Rajdhani only for window titles; the main UI font stays as it is
 /org/gnome/desktop/wm/preferences/titlebar-font 'Rajdhani Bold 12'

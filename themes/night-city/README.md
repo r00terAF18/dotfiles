@@ -7,7 +7,7 @@ switches back to it.
 Black backgrounds, Arasaka-yellow accent, netrunner-cyan focus and selection, and red/magenta for alerts.
 Rajdhani is used for **titles only**: window titles, headerbar titles and the top-bar clock.
 
-## Palette (`palette.sh`, the single source of truth)
+## Palette (`scripts/night-city/palette.sh`, the single source of truth)
 
 | Name | Hex | Used for |
 | --- | --- | --- |
@@ -26,45 +26,35 @@ Rajdhani is used for **titles only**: window titles, headerbar titles and the to
 | `BLUE` / `PURPLE` | `#3D7BFF` / `#B967FF` | ANSI blue / extra |
 | bright ANSI | `#555B70 #FF4D6D #5CFFC0 #FFF75C #7AA5FF #FF7AE6 #66F6FF #FFFFFF` | terminal brights |
 
-To change a colour, edit `palette.sh` and run `./generate.sh`. It re-renders `dist/` in place, and
+To change a colour, edit `scripts/night-city/palette.sh` and run `scripts/night-city/generate.sh`. It re-renders `dist/` in place, and
 everything is linked to `dist/`, so apps pick up the change on their next reload. Commit `dist/`
-along with the palette. `./generate.sh --check` tells you whether `dist/` is stale.
+along with the palette. `scripts/night-city/generate.sh --check` tells you whether `dist/` is stale.
 
 ## Layout
 
 ```
 themes/night-city/
-├── palette.sh            colours (NC_* variables)
-├── generate.sh           templates/**/*.in -> dist/ ({{name}}, {{name_hex}}, {{name_rgb}})
-├── templates/            sources of everything below
-├── assets/fetch/         original Judy and Night City terminal images
-├── dist/                 rendered files (what gets linked)
-│   ├── gtk-4.0/gtk.css           libadwaita: :root variables + @define-color, title font, neon headerbar line
-│   ├── gtk-3.0/gtk.css           adw-gtk3 colour overrides
-│   ├── themes/NightCity/gtk-3.0/gtk.css  XFCE GTK3 accent and selection colours
-│   ├── themes/NightCity/xfwm4/themerc    XFCE window title and decoration colours
-│   ├── themes/NightCity/gnome-shell/gnome-shell.css   minimal shell theme on top of the default
-│   ├── kitty/night-city.conf     colours, JetBrains Mono, window borders/padding and tab labels
-│   ├── starship/starship.toml    powerline CLI prompt, palette "night_city"
-│   ├── fish/night-city.fish      fish syntax colours + STARSHIP_CONFIG
-│   ├── btop/night-city.theme
-│   ├── fastfetch/config.jsonc
-│   ├── fastfetch/kiroshi.txt
-│   ├── fastfetch/night-city-afterlife.txt, judy-alvarez.txt
-│   ├── neofetch/config.conf and two custom ASCII logos
-│   ├── cava/config               cyan -> magenta -> red -> yellow gradient
-│   ├── mangohud/MangoHud.conf    your MangoHud keys/blacklist, recoloured
-│   ├── burn-my-windows/night-city.conf   TV-glitch open/close, yellow, 500 ms
-│   └── environment.d/60-night-city.conf  STARSHIP_CONFIG, MANGOHUD_CONFIGFILE
-├── settings/dconf.txt    every dconf key the theme sets (key value)
-├── xfce4-settings.txt    manual XFCE appearance and panel setup
-├── lib/common.sh         paths, file list, packages, helpers shared by the scripts
-├── lib/optional.sh       cursor, window-border, Conky and Plymouth installers
-├── lib/conky_adapt.py    adapts the optional cyberpunk-conky HUD
-├── lib/ncjson.py         JSON/GVariant helpers (settings.json, manifest, extension lists)
-├── backup.sh
-├── install.sh
-└── uninstall.sh
+├── templates/             source files for generated configs
+├── assets/fetch/          original Judy and Night City terminal images
+├── settings/dconf.txt     every dconf key the theme sets
+├── xfce4-settings.txt     manual XFCE appearance and panel setup
+└── dist/                  rendered files (what gets linked)
+    ├── gtk-4.0/ and gtk-3.0/     GTK colours and title font
+    ├── themes/NightCity/         XFCE GTK and window decoration themes
+    ├── gnome-shell/              GNOME Shell theme
+    ├── kitty/, starship/, fish/  terminal and prompt themes
+    ├── btop/, fastfetch/, neofetch/ terminal display themes and art
+    ├── cava/ and mangohud/       audio visualizer and game overlay themes
+    ├── burn-my-windows/          window animation profile
+    └── environment.d/            STARSHIP_CONFIG and MANGOHUD_CONFIGFILE
+
+scripts/night-city/
+├── palette.sh             colours (NC_* variables)
+├── generate.sh            render templates into themes/night-city/dist/
+├── backup.sh              snapshot current theme-managed state
+├── install.sh             install reversible changes
+├── uninstall.sh           restore the recorded pre-theme state
+└── lib/                   shared shell and Python helpers
 ```
 
 ## Where each piece goes
@@ -107,7 +97,7 @@ symlink, and Goverlay sometimes replaces it. Swapping that link would mean juggl
 owners of one path. MangoHud reads `MANGOHUD_CONFIGFILE` before its default path, so the theme
 only adds `~/.config/environment.d/60-night-city.conf`, which points at its own recoloured copy.
 Uninstalling deletes that one link. Your file isn't touched. To change HUD keys while the theme is on,
-edit `templates/mangohud/MangoHud.conf.in` and re-run `./generate.sh`.
+edit `templates/mangohud/MangoHud.conf.in` and re-run `scripts/night-city/generate.sh`.
 
 ### Fastfetch and Neofetch art
 
@@ -140,7 +130,7 @@ neofetch --backend kitty --source ~/.config/fastfetch/night-city-kiroshi.jpg
 | google/fonts (GitHub, jsDelivr mirror) | Rajdhani (OFL), titles only |
 
 Packages that are already installed, or provided by another package (`pacman -T`), are skipped. The
-install records exactly what it installed, and `uninstall.sh --remove-packages` removes only those.
+install records exactly what it installed, and `scripts/night-city/uninstall.sh --remove-packages` removes only those.
 
 ## The scripts
 
@@ -149,7 +139,7 @@ questions default to *no* unless you pass `--yes`; optional components remain op
 skipped unless their flags are supplied. `sudo` is used only for package installation, papirus-folders,
 and the optional Plymouth boot splash.
 
-### `backup.sh [--dry-run] [--dest DIR]`
+### `scripts/night-city/backup.sh [--dry-run] [--dest DIR]`
 1. Creates `~/.night-city-backup/<YYYYmmdd-HHMMSS>/`.
 2. Saves `dconf dump /` (full), the dumps of the blur-my-shell / just-perfection / burn-my-windows / user-theme subtrees, and
    the current value (or "unset") of every key in `settings/dconf.txt`. The font keys are saved too, for reference.
@@ -160,9 +150,9 @@ and the optional Plymouth boot splash.
 5. Saves package presence, the papirus-folders colour and whether the font dir existed. Writes `manifest.json`.
 6. Read-only apart from the backup dir. `--dry-run` collects into a temp dir, prints the summary and deletes it.
 
-### `install.sh [--dry-run] [--yes] [--skip-packages] [--with-orbitron] [--no-editors] [--reapply] [--cursor neon|bibata|keep] [--icons papirus] [--borders [glow|highlight|none]] [--with-conky] [--with-boot] [--boot-theme cybernetic|glitch]`
+### `scripts/night-city/install.sh [--dry-run] [--yes] [--skip-packages] [--with-orbitron] [--no-editors] [--reapply] [--cursor neon|bibata|keep] [--icons papirus] [--borders [glow|highlight|none]] [--with-conky] [--with-boot] [--boot-theme cybernetic|glitch]`
 0. Checks the tools it needs, reads the GNOME Shell version and renders `dist/` (in dry-run it only checks it).
-1. Runs `backup.sh` into a new backup dir and **stops if the backup fails**. The first install marks it as the
+1. Runs `scripts/night-city/backup.sh` into a new backup dir and **stops if the backup fails**. The first install marks it as the
    pre-theme backup (`~/.night-city-backup/active`), so later re-installs never overwrite that reference.
    Every change from here on is logged to `<backup>/state.tsv` (and `state.json`).
 2. Packages: lists what's missing, then asks before `sudo pacman -S --needed` and before `yay -S --needed`.
@@ -184,7 +174,7 @@ behavior. The window border, Conky HUD, and Plymouth splash are interactive opt-
 them unless `--borders`, `--with-conky`, or `--with-boot` is supplied. The boot splash automation
 requires systemd-boot, dracut, and `kernel-install-for-dracut`.
 
-### `uninstall.sh [--dry-run] [--yes] [--backup DIR] [--remove-packages]`
+### `scripts/night-city/uninstall.sh [--dry-run] [--yes] [--backup DIR] [--remove-packages]`
 1. Uses the pre-theme backup (`active` marker), or the latest backup taken while the theme was off, or `--backup DIR`.
    Reads `state.tsv` from that backup and from every later one (re-installs).
 2. Files: removes each link/copy only if it's still the theme's. Then puts back the saved original (e.g. kitty's
@@ -204,19 +194,19 @@ requires systemd-boot, dracut, and `kernel-install-for-dracut`.
 ## Commands
 
 ```sh
-cd ~/dotfiles/themes/night-city
-./backup.sh                     # optional; install.sh makes its own backup anyway
-./install.sh --dry-run          # see exactly what would happen
-./install.sh                    # asks before sudo/yay/papirus-folders
+cd ~/dotfiles
+scripts/night-city/backup.sh    # optional; installer makes its own backup anyway
+scripts/night-city/install.sh --dry-run  # preview changes
+scripts/night-city/install.sh   # asks before sudo/yay/papirus-folders
 # log out and back in (Wayland can't reload the Shell theme, extensions or environment.d any other way)
 
-./uninstall.sh --dry-run
-./uninstall.sh                  # or: ./uninstall.sh --remove-packages
+scripts/night-city/uninstall.sh --dry-run
+scripts/night-city/uninstall.sh # or: scripts/night-city/uninstall.sh --remove-packages
 # log out and back in again
 ```
 
-`bootstrap.sh` does **not** run this. To include it in a fresh setup, run `themes/night-city/install.sh` after
-`bootstrap.sh`, or add that line to the end of `bootstrap.sh` yourself.
+`scripts/setup-system.sh` does **not** run this. To include it in a fresh setup, run
+`scripts/night-city/install.sh` after `scripts/setup-system.sh`.
 
 ## Caveats
 

@@ -6,6 +6,8 @@
 case ":$PATH:" in *":$HOME/.local/bin:"*) ;; *) export PATH="$HOME/.local/bin:$PATH" ;; esac
 case ":$PATH:" in *":$HOME/.dotnet/tools:"*) ;; *) export PATH="$PATH:$HOME/.dotnet/tools" ;; esac
 
+
+export PATH="$HOME/Jetbrains/bin:$PATH"
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 
@@ -99,11 +101,6 @@ ex() {
 	fi
 }
 
-# Mirror a website for offline use
-getWeb() {
-	wget --mirror --convert-links --adjust-extension --page-requisites --no-parent --no-check-certificate "$1"
-}
-
 # Django / venv helpers
 alias pmc="python manage.py createsuperuser"
 alias pmk="python manage.py makemigrations"
@@ -119,3 +116,7 @@ alias acenv="source ./env/bin/activate"
 
 # Prompt (keep last so it wraps PROMPT_COMMAND)
 command -v starship >/dev/null && eval "$(starship init bash)"
+
+
+# Added by Antigravity CLI installer
+export PATH="/home/amir/.local/bin:$PATH"

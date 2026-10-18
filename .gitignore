@@ -8,5 +8,6 @@ auth.json
 home/.tiddl/*
 !home/.tiddl/config.toml
 .dotfiles-backup/
+backups/
 *.bak
 !legacy/*.bak

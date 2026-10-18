@@ -2,6 +2,7 @@
 
 # uv / user tools
 fish_add_path "$HOME/.local/bin"
+fish_add_path "$HOME/Jetbrains/bin"
 
 if status is-interactive
     # No greeting
@@ -21,3 +22,7 @@ if status is-interactive
 end
 
 # yt-dlp shortcuts live in conf.d/yt-dlp.fish, nvm.fish in conf.d/nvm.fish (fisher)
+
+
+# Added by Antigravity CLI installer
+set -gx PATH "/home/amir/.local/bin" $PATH

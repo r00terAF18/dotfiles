@@ -16,7 +16,7 @@ sudo pacman -S --needed archlinux-appstream-data fwupd
 sudo pacman -S --needed lib32-pipewire-jack
 ```
 
-Gaming extras (Steam/Proton): after `packages/install.sh`, open ProtonUp-Qt
+Gaming extras (Steam/Proton): after `scripts/packages/install.sh`, open ProtonUp-Qt
 and install the latest GE-Proton as a fallback next to Proton Experimental.
 
 Not stored in this repo on purpose: yt-dlp cookie files (`~/Videos/*cookies*.txt`),
