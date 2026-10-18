@@ -1,1 +1,0 @@
-../../../../../scripts/archive/legacy/quickshell/ii/scripts/colors/generate_colors_material.py

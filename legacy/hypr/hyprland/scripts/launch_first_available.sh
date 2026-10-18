@@ -1,1 +1,0 @@
-../../../../scripts/archive/legacy/hypr/hyprland/scripts/launch_first_available.sh

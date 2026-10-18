@@ -1,1 +1,0 @@
-../../../../../scripts/archive/legacy/quickshell/ii/scripts/kvantum/changeAdwColors.py

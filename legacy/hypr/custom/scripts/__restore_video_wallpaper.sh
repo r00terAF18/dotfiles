@@ -1,1 +1,0 @@
-../../../../scripts/archive/legacy/hypr/custom/scripts/__restore_video_wallpaper.sh

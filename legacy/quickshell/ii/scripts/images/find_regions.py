@@ -1,1 +1,0 @@
-../../../../../scripts/archive/legacy/quickshell/ii/scripts/images/find_regions.py

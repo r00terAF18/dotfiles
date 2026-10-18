@@ -1,1 +1,0 @@
-../../../../../scripts/archive/legacy/hypr/hyprland/scripts/ai/show-loaded-ollama-models.sh

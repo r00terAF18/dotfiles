@@ -1,1 +1,0 @@
-../../../../../scripts/archive/legacy/quickshell/ii/scripts/ai/show-installed-ollama-models.sh

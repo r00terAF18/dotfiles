@@ -1,1 +1,0 @@
-../../../../../../scripts/archive/legacy/quickshell/ii/scripts/colors/random/random_konachan_wall.sh

@@ -1,1 +1,0 @@
-../../../../scripts/archive/legacy/quickshell/translations/tools/translation-manager.py

@@ -1,1 +1,0 @@
-../../../../../scripts/archive/legacy/hypr/hyprland/scripts/ai/primary-buffer-query.sh

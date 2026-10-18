@@ -1,1 +1,0 @@
-../../../../scripts/archive/legacy/hypr/hyprland/scripts/start_geoclue_agent.sh

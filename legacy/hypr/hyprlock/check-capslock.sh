@@ -1,1 +1,0 @@
-../../../scripts/archive/legacy/hypr/hyprlock/check-capslock.sh
